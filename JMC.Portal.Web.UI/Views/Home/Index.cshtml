@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    //Layout = "/Views/Shared/PortalMaster.cshtml";
+     //await Html.RenderPartialAsync("~/Views/Shared/PortalMaster.cshtml");
+}
+@*@model IQueryable<JMC.Portal.Business.PortalModels.Employee>*@
+@*@model IQueryable<JMC.Portal.Common.MVC.Models.OpenOrderSummaryModel>*@
+@*@model IQueryable<JMC.Portal.Common.MVC.Models.OpenOrderItem>*@
+@using Kendo.Mvc
+@*<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>*@
+@*<div class="row">
+    <div class="col-lg-12">
+        <input name="kDatePicker" id="kDatePicker" />
+    </div>    
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#kDatePicker").kendoDatePicker();
+        })
+    </script>
+}*@
+	<p style="font-weight: bold; float: left; padding-top: 1px; padding-left: 2px;">Open Order Summary</p>
+	<p id="bldate" style="float: left; padding-top: 1px; padding-left: 2px;"></p>
+		<img alt="refresh" src="/Content/Images/icon-refresh-small.png" id="refreshIcon" title="Refresh Backlog" style="float: left; margin-top: -5px; display: none; cursor: pointer;" onclick="AsyncBacklog();" />
+		
+		<a style="float: left; color: #FFFFFF;" title="Save Grid Settings" href="#" onclick="SaveGridSettings('BacklogGrid', <%: (long)Enums.DataViews.OpenOrderSummary %>);">
+			<img alt="Save Grid Settings" src="/images/table_save.png" id="Img3" title="Save Grid Settings" style="margin-right: 10px; margin-left: 5px; width: 16px; height: 16px;" />	
+		</a>
+	 <a id="A1" onclick="PrintKendoSalesOrderBacklog();printFrame();" href="#" style="float: left; color: #FFFFFF; margin-right: 10px;">  
+  <!-- <a id="A1" onclick="printPage()" href="#" style="float: left; color: #FFFFFF; margin-right: 10px;">   -->
+			<img style="margin-right: 5px; width: 16px; height: 16px;" src="/images/darkTheme/icons/iconPrint.png" />
+	</a>
+	 <a style="float: left; color: #FFFFFF;" title="View in Excel" href="#" onclick="KendoOpenOrderSummaryExport();">
+			<img src="/images/Export_Excel.png" />
+		</a>
+        <br/>
+
+@*<div class="text-center">
+    <h2>Telerik UI DatePicker for ASP.NET Core</h2>
+    @(Html.Kendo().DatePicker()
+        .Name("my-picker")
+        )
+</div>*@
+
+@(Html.Kendo().Grid<JMC.Portal.Common.MVC.Models.OpenOrderItem>()
+        .Name("grid")
+        .EnableCustomBinding(true)
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(10)
+            .Read(read => read.Action("Customers_Read", "Home"))
+            
+        )
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.SoldTo);
+            columns.Bound(c => c.ShipTo);
+            columns.Bound(c => c.City);
+            columns.Bound(c => c.Plant);
+            columns.Bound(c => c.Ready);
+            columns.Bound(c => c.Released);
+            columns.Bound(c => c.BOL);
+            columns.Bound(c => c.Open);
+        })
+        .Groupable()
+        .AutoBind(true)
+        .Sortable()
+        .Filterable()
+        .ColumnMenu(true)
+        .Pageable(pageable => pageable
+        .ButtonCount(10)
+        .Refresh(true)
+        .PageSizes(new[] { 5, 10, 20 }))
+        
+    )
+        @*.DataSource(dataSource => dataSource
+            .Ajax()
+            .Read(read => read.Action("Customers_Read", "Home"))
+        )
+    )*@

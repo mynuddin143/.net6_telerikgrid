@@ -1,0 +1,159 @@
+﻿@model System.Collections.Generic.IEnumerable<JMC.Portal.Web.UI.ViewModels.MenuViewModel>
+@*<ul class="sidenav" id="sidenavBar">
+
+        @{var count = 0;}
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                if (count == 0)
+                {
+                    <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
+                    <li>
+                        <a class="nav-link white-text @item.SelectedClass">
+                            @item.Content
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="nav-link white-text @item.SelectedClass">
+                            @item.Content
+                        </a>
+                    </li>
+                }
+
+                count++;
+            }
+        }
+        else {
+            <li><a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a></li>
+        }
+
+    </ul>*@
+@*<ul class="sidenav accordion-menu" id="sidenavBar" data-accordion-menu>
+        @foreach (var menu in Model)
+        {
+
+            if (menu.Children.Any())
+            {
+                <li class="dropdown-btn">
+                    <button class="dropdown-btn active">
+                        <span>@menu.Content</span>
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-container">
+                        <partial name="Components/SideMenu/_SideMenupartial" model="menu.Children" />
+                    </div>
+                </li>
+            }
+            else
+            {
+                <li class="@menu.SelectedClass @menu.SelectedStyle">
+                    @{ if (string.IsNullOrEmpty(menu.Url))   //Add either onclick event or href.
+                        {
+                            <img src='~/Images/pareto_leftNav_arrowSmall_subcategory_black.png' class='img - fluid' style='width: auto;' />
+
+                            <a onclick="@menu.OnClick">
+                                <span style="@menu.SelectedStyle">@menu.Content</span>
+                            </a> }
+                        else
+                        {
+                            <a href="@menu.Url">
+                                <img src="~/Images/pareto_leftNav_arrowSmall_subcategory_black.png" class="img-fluid" style="width:auto;" />
+                                <span style="@menu.SelectedStyle">@menu.Content</span>
+                            </a> } }
+                </li>
+            }
+        }
+    </ul>*@
+
+
+@*<div class="dropdown">
+        <ul>
+            <li style="display:block;"><a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><i class="fa-caret-left"></i></a></li>
+        </ul>
+
+    </div>*@
+
+
+@if (Model.Count() > 0)
+{
+    @foreach (var menu in Model)
+    {
+
+        if (menu.Children.Any())
+        {
+            <button class="dropdown-btn active btn-secondary dropdown-toggle">
+                <span>@menu.Content</span>
+                <i class="fa fa-caret-square-down"></i>
+            </button>
+            <div class="dropdown-container" id="dropdown-container">
+                <partial name="Components/SideMenu/_SideMenuPartial" model="menu.Children" />
+            </div> }
+        else
+        {
+            <li class="@menu.SelectedClass @menu.SelectedStyle">
+                @{ if (string.IsNullOrEmpty(menu.Url))   //Add either onclick event or href.
+                    {
+                        @*<img src='~/Images/pareto_leftNav_arrowSmall_subcategory_black.png' class='img - fluid' style='width: auto;' />*@
+
+                        <a onclick="@menu.OnClick">
+                            <span style="@menu.SelectedStyle">@menu.Content</span>
+                        </a> }
+                    else
+                    {
+                        <a href="@menu.Url">
+                            @*<img src="~/Images/pareto_leftNav_arrowSmall_subcategory_black.png" class="img-fluid" style="width:auto;" />*@
+                            <span style="@menu.SelectedStyle">@menu.Content</span>
+                        </a> } }
+            </li>}
+    }
+                    }
+                    else
+                    {
+<div style="width: 198px; display: block; background-color: white; margin-left: 1px; border: 1px solid #D5D5D5;" id="productInquiry">
+    <table class="table-responsive-sm">
+        <tr>
+            <td colspan="2" style="text-align:center">Product Inquiry</td>
+            
+        </tr>
+        <tr>
+            <td style="width:60px;">Shape:</td>
+            <td>
+                <img alt="Round" src="/images/circle_grey.png" id="roundIcon" style="cursor: pointer;" title="Round" onclick="showRound();">&nbsp;
+                <img alt="Square/Rectangle" src="/images/Sq-Rect-Grey.png" id="SqRecIcon" style="cursor: pointer;" title="Square/Rectangle" onclick="showSquareRecs();">&nbsp;
+                <img alt="Jumbo" src="/images/Jumbo-Grey.png" id="JumboIcon" style="cursor: pointer;" title="Jumbo" onclick="showJumbo();">&nbsp;
+                <img alt="Special" src="/images/Special-Grey.png" id="SpecialIcon" style="cursor: pointer;" title="Special" onclick="showSpecials();">&nbsp;
+                <img alt="Special" src="/images/Shuriken_Nut_Keeper.png" id="Img5" style="cursor: pointer;" title="Shuriken Nut Keeper" onclick="showShurikenNutKeeper();" height="28px" width="30px">&nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td style="width:60px;">Plant:</td>
+            <td>
+                @Html.DropDownList("Plant", new List<SelectListItem> { new SelectListItem() { Text ="ALL",Value="ALL" }, new SelectListItem() { Text = "Harrow", Value = "1" } }, new { @style = "width: 100px;" })
+            </td>
+        </tr>
+        <tr>
+            <td style="width:60px;">Grade:</td>
+            <td>
+                @Html.DropDownList("Grade", new List<SelectListItem> { new SelectListItem() { Text = "ALL", Value = "ALL" }, new SelectListItem() { Text = "Harrow", Value = "1" } }, new { @style = "width: 100px;" })
+            </td>
+        </tr>
+        <tr>
+            <td style="width:60px;text-align:center;padding-top:0px;">Include:</td>
+            <td>
+                <input type="checkbox" value="Excess Prime" /><br />
+                <input type="checkbox" value="Secondary" />
+            </td>
+        </tr>
+    </table>
+
+    
+</div>
+                        
+                    }
+
+
+

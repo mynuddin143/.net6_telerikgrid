@@ -1,0 +1,12 @@
+﻿@model System.Collections.Generic.IEnumerable<JMC.Portal.Web.UI.ViewModels.Menu>
+
+<ul class="navbar-nav flex-grow-1" id="horizantalNavbar">
+    @foreach (var item in Model)
+    {
+        <li class="nav-item">
+            <a class="nav-link white-text @item.SelectedClass" asp-area="" asp-controller="@item.Controller" asp-action="@item.Action">
+                @item.Content
+            </a>
+        </li>  
+    }    
+</ul>

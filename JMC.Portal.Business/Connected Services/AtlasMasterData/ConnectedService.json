@@ -1,0 +1,16 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "http://jmac-aecc-d.jmcsteel.local:8000/sap/bc/srt/wsdl/sdef_ZWS_MASTER_DATA/wsdl11/ws_policy/document?sap-client=050"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, JMC.Portal.Business.AtlasMasterData"
+    ],
+    "targetFramework": "net6.0",
+    "typeReuseMode": "All"
+  }
+}

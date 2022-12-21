@@ -1,0 +1,2354 @@
+﻿@*<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Portal.Master" Inherits="System.Web.Mvc.ViewPage<JMC.Portal.Web.UI.Models.Home.IndexDashboard>" %>
+
+<%@ Import Namespace="JMC" %>
+<%@ Import Namespace="JMC.Portal.Business" %>
+<%@ Import Namespace="JMC.Portal.Common.MVC.WebControls" %>*@
+
+@model IQueryable<JMC.Portal.Web.UI.ViewModels.Menu>
+<asp:Content ID="LeftContent" ContentPlaceHolderID="LeftContent" runat="server">
+<!--   <iframe name="ifr" style="display:none" ></iframe> -->
+	<% if (Model.CurrentEmployee.HasRole((long)Enums.ApplicationRoles.JMCPortalATCEcommerce)) { %>
+	<% using (Html.TableWidget("", "ProdInqWidget", "width: 185px; margin: 0px 0px 10px 0px;", false, TableWidgetExt.Theme.BlackTheme, 1)) { %>
+	 <!-- <iframe name="ifr_m" style="display:none" ></iframe> -->
+    <div style="margin: 0px auto;">
+		<form id="productInquiry" action="/StockRollings/ProductInquiry/" method="post">
+        <input type="hidden" value="@ViewBag.hdnFlag" id="hdnSoldTo" />
+        <!-- <iframe name="ifr" style="display:none" ></iframe> -->
+             <iframe name='ifr' id ="ifr" src="" style="width:0%;height:0%;position:fixed;top:0px;left:0px;z-index:99999999;" frameborder="0"  onload="" ></iframe>       
+        <!--  <div name="dmodel" style="display:none" ></div> -->        
+ <div id="myModal" class="modal_refresh" >  <!-- Modal content -->
+  <div class="modal-content" >    
+    <img id='loading' alt="RefreshImage" src='/images/loading.gif'  align="middle"    />  
+  </div>
+</div>
+
+<style>
+
+td.selected {
+  background-color: red;
+}
+</style>
+
+<table style="width: 100%;">
+<tr>
+				<td colspan="4" style="text-align:center;">
+					Product Inquiry
+					<input type="hidden" value="" name="productCode" id="productCode" maxlength="10" style="width: 90%;" />
+				</td>
+			</tr>
+			<tr>
+			 <td colspan="2" class="icontext">
+			   Shape
+				</td>
+
+				<td colspan="2" >
+				  <img alt="Square/Rectangle" src="/images/Sq-Rect-Grey.png" id="SqRecIcon" style="cursor: pointer;" title="Square/Rectangle" onclick="showSquareRecs();" />
+					<img alt="Round" src="/images/circle_grey.png" id="roundIcon" style="cursor: pointer;" title="Round" onclick="showRound();" />
+					<img alt="Jumbo" src="/images/Jumbo-Grey.png" id="JumboIcon" style="cursor: pointer;" title="Jumbo" onclick="showJumbo();" />
+					<img alt="Special" src="/images/Special-Grey.png" id="SpecialIcon" style="cursor: pointer;" title="Special" onclick="showSpecials();" />
+                    <img alt="Special" src="/images/Shuriken_Nut_Keeper.png" id="Img5" style="cursor: pointer;" title="Shuriken Nut Keeper" onclick="showShurikenNutKeeper();" height="28px" width="30px"/>
+				<%--	<input type="hidden" value="" name="shape" id="Hidden1" />--%>
+					<input type="hidden" value="" name="shape" id="shape" />
+					<input type="hidden" value="" name="sshape" id="sshape" />
+				</td>
+			</tr>
+
+			<tr>
+				<td width="3px">
+				</td>
+				<td>
+				</td>
+				<td>
+				</td>
+				<td colspan="" style="text-align: left; margin: 3px;">
+					<div id="roundshape" style="display:none;">
+						<input class="radio" type="radio" name="roundshape" id="RoundTube" value="RoundTube" onclick="showRound();" checked="checked" />
+						<label for="RoundTube"> 
+							Tubing</label>
+						<input class="radio" type="radio" name="roundshape" id="RoundTube" value="RoundNPS" onclick="showNPS();" />
+						<label for="RoundNPS">
+							NPS</label>
+					</div>
+				</td>
+			</tr>
+			
+				<tr>
+				<td colspan ="4" style="text-align: left;" >
+				<div id="squareDiv" style="display:none;" >
+			@*<%--<% using (Html.BeginForm("ChangeScrapRandomLength", "SoldTo", new { @id = Model.SAPSoldTo.SAPShipToID }, FormMethod.Post, new { id = "changeScrapRandomLengthForm", name = "changeScrapRandomLengthForm" })) { %>--%>*@
+			<% int i = 0; %>
+			<table id="SquareSizeGuageTable" style="width:100%" >
+			<tr>
+				<td style="width:10%">
+					<table id="SquareTable" border="1" cellpadding="0" cellspacing="0" width="10%" style="border-color:#D3D3D3;">		
+						<tr>
+							<td  id="SqrecsizeHeader" class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 10px 0px 0px;" >
+							<font color="white">
+										<b>X&nbsp;&nbsp;&nbsp;</b>
+									</font>
+							</td>
+						</tr>
+						<tr class="even">
+						<td id="AllSQTD">
+					
+	          <font color="black">
+						<a class="sqrecsizelink" href="#" onclick="showSquare();" title="All Squares">	
+						<div style="height:100%;width:100%">
+							Sqs
+							</div>	
+							</a>
+						</font>
+					</td>
+					</tr>
+					<tr class="odd">
+						<td id="AllRecsTD">
+					
+	          <font color="black">
+						<a class="sqrecsizelink" href="#" onclick="showRectangle();" title="All Rectangles">	
+						<div style="height:100%;width:100%">
+							Recs
+						</div>	
+							</a>
+						</font>
+					</td>
+					</tr>
+					<% foreach (var sr in ( from s in Model.SqRecSizes.OrderBy(x => x.Size1) select s.Size1).Distinct()) { %>
+				  <% var srsize = Model.SqRecSizes.FirstOrDefault(x => x.Size1 == sr); %>
+					<tr class="<%:(((i++)%2)==0)?"even":"odd" %>">
+						<td id="Sqrec_<%: srsize.sizeID%>">
+					
+	          <font color="black">
+						<a class="sqrecsizelink" href="#" onclick="SQRecSizeselected('Sqrec_<%: srsize.sizeID%>',	'<%: srsize.Size1%>');">	
+						<div style="height:100%;width:100%;cursor: pointer;">
+							<%: srsize.Size1.ToString("#.###")%>
+							</div>	
+							</a>
+						</font>
+					</td>
+					</tr>
+				<%} %>
+			</table>
+			</td>
+			<td width="1%">X</td>
+				<td style="width:10%;">
+					<table id="SqRectSizesXYHeaderTable" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+						<tr>
+							<td width="100%"  id="SqRectSizesXYHeader" class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 10px 0px 0px;">
+							<font color="white">
+										<b>Y&nbsp;&nbsp;&nbsp;</b>
+									</font>
+							</td>
+						</tr>
+				</table>
+					<table id="SqRectSizesXY" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+					</table>
+			</td>
+			 <td  align="left" style="width:79%">
+			   
+				 <table id="SqgaugeHeader" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+						<tr width="100%">
+							<td  class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px; text-align:center;" align="center;" width="100%">
+							<font color="white">
+									<b>Gauge(wall)</b>
+								</font>
+							</td>
+						</tr>			
+					</table>
+			 		<table id="tblSquareRecGauges" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3; text-align:left;">		
+					</table>
+
+			</td>
+			</tr>
+			</table>
+	
+			</div>
+			<div id="JumboDiv" style="display:none;">
+			<% i = 0; %>
+			<table id="JumboSizeGaugeTable" width="100%">
+				<tr width="100%">
+					<td style="width:50%">
+								<table id="JumboTable" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">
+									<tr>
+										<td id="JumbosizeHeader" class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;">
+										<font  color="white">
+												<b>Size</b>
+												</font>
+										</td>
+									</tr>
+							<tr class="odd">
+								<td id="AllJumboTD">					
+									<font color="black">
+												<a class="jumbosizelink" href="#" onclick="showAllJumbos();">	
+													<div style="height:100%;width:100%">
+															All Jumbos
+													</div>	
+											</a>
+								</font>
+							</td>
+						</tr>
+										<% foreach (var jumbo in Model.JumboSizes.OrderBy(x => x.Size1).ThenBy(x => x.Size2)) { %>
+									<tr class="<%:(((i++)%2)==0)?"even":"odd" %>">
+										<td id="Jumbo_<%: jumbo.sizeID%>"> 
+											 <font  color="black" >
+												<a class="jumbosizelink" href="#" onclick="JumboSizeselected('Jumbo_<%: jumbo.sizeID%>',	'<%: jumbo.sizeID%>','<%: (jumbo.Size1 == jumbo.Size2)?"SQ":"REC"%>');">	
+												<div style="height:100%;width:100%;cursor: pointer;">
+														<%: jumbo.Size1.ToString("#.###")%>
+														x
+													  <%: jumbo.Size2.ToString("#.###")%>
+												</div>	
+												</a>
+											</font>										
+										</td>
+									</tr>
+									<%} %>
+								</table>
+					</td>
+					<td style="width:50%" align="left">
+					<table id="JumbogaugeHeader" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+						<tr width="100%">
+							<td class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;" align="left" width="100%">
+							<font  color="white">
+									<b>Gauge(Wall)</b>
+								</font>
+							</td>
+						</tr>				 
+					</table>
+			 		<table id="tblJumboGauges" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+					</table>
+					</td>
+				</tr>
+			</table>
+
+			</div>
+
+					<div id="SpecialDiv" style="display:none;">
+			<% i = 0; %>
+			<table id="SpecialSizeGaugeTable" width="100%">
+				<tr width="100%">
+					<td style="width:50%">
+								<table id="SpecialTable" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">
+									<tr>
+										<td id="SpecialsizeHeader" class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;">
+										<font  color="white">
+												<b>Size</b>
+												</font>
+										</td>
+									</tr>
+							<tr class="odd">
+								<td id="AllSpecialTD">					
+									<font color="black">
+												<a class="Specialsizelink" href="#" onclick="showAllSpecials();">	
+													<div style="height:100%;width:100%">
+															All Specials
+													</div>	
+											</a>
+								</font>
+							</td>
+						</tr>
+										<% foreach (var sp in Model.SpecialSizes.OrderBy(x => x.Size1).ThenBy(x => x.Size2)) { %>
+									<tr class="<%:(((i++)%2)==0)?"even":"odd" %>">
+										<td id="Sp_<%: sp.sizeID%>"> 
+											 <font  color="black" >
+												<a class="Specialsizelink" href="#" onclick="SpecialSizeselected('Sp_<%: sp.sizeID%>',	'<%: sp.sizeID%>','<%: (sp.Size1 == sp.Size2)?"SQ":"REC"%>');">	
+												<div style="height:100%;width:100%;cursor: pointer;">
+														<%: sp.Size1.ToString("#.###")%>
+														x
+													  <%: sp.Size2.ToString("#.###")%>
+												</div>	
+												</a>
+											</font>										
+										</td>
+									</tr>
+									<%} %>
+								</table>
+					</td>
+					<td style="width:50%" align="left">
+					<table id="SpecialgaugeHeader" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+						<tr width="100%">
+							<td class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;" align="left" width="100%">
+							<font  color="white">
+									<b>Gauge(Wall)</b>
+								</font>
+							</td>
+						</tr>				 
+					</table>
+			 		<table id="tblSpecialGauges" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+					</table>
+					</td>
+				</tr>
+			</table>
+
+			</div>
+			<div id="roundDiv" style="display:none;">
+				<% i = 0; %>
+			<table id="roundGaugeSizeTable" width="100%">
+				<tr width="100%">
+						<td style="width:50%"> 
+						<table id="roundTable" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">
+								<tr>
+									<td  id="roundsizeHeader" class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;">
+									<font  color="white">
+											<b>Size</b>
+										</font>
+									</td>
+								</tr>
+								<tr class="odd">
+								<td id="AllRoundTD">					
+									<font color="black">
+												<a class="roundsizelink" href="#" onclick="showAllRound();">	
+													<div style="height:100%;width:100%">
+															All Rounds
+													</div>	
+											</a>
+								</font>
+							</td>
+						</tr>
+								<% foreach (var round in Model.RoundSizes.OrderBy(x => x.Size)) { %>
+								<tr class="<%:(((i++)%2)==0)?"even":"odd" %>">
+
+								   <td id="Rd_<%: round.RoundID%>"> 
+											 <font  color="black" >
+												<a class="roundsizelink" href="#" onclick="RoundSizeselected('Rd_<%: round.RoundID%>',	'<%: round.RoundID%>');">	
+												<div style="height:100%;width:100%;cursor: pointer;">
+														<%: round.Size.ToString("#.###")%>
+												</div>	
+												</a>
+											</font>										
+										</td>											
+								</tr>
+							<%} %>
+							</table>
+						</td>
+						<td style="width:50%" align="left">
+					<table id="RoundaugeHeader" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+						<tr>
+							<td class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;" align="left" width="100%">
+							<font color="white">
+									<b>Gauge(Wall)</b>
+								</font>
+							</td>
+						</tr>				 
+					</table>
+			 		<table id="tblRoundGauges" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+					</table>
+						</td>
+				</tr>
+			</table>
+			
+			</div>
+			<div id="npsDiv" style="display:none;">
+				<% i = 0; %>
+			<table id="npsgaugeTable" width="100%">
+				<tr width="100%">
+						<td style="width:50%">
+							<table id="NPSTable" border="1" cellpadding="0" cellspacing="0"  width="100%" style="border-color:#D3D3D3;" >
+							<tr>
+								<td  id="npssizeHeader" class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;">
+								<font color="white">
+										<b>Size</b>
+								</font>
+								</td>
+								</tr>
+							<tr class="odd">
+								<td id="AllNPSTD">					
+									<font color="black">
+												<a class="npssizelink" href="#" onclick="showAllNPS();">	
+													<div style="height:100%;width:100%">
+															All NPS
+													</div>	
+											</a>
+								</font>
+							</td>
+						</tr>
+							<% foreach (var round in Model.NPSSizes.OrderBy(x => x.NPSSize)) { %>
+								<tr class="<%:(((i++)%2)==0)?"even":"odd" %>">
+								<td id="Nps_<%: round.RoundID%>"> 
+											 <font color="black" >
+												<a class="npssizelink" href="#" onclick="NPSSizeselected('Nps_<%: round.RoundID%>',	'<%: round.RoundID%>');">	
+												<div style="height:100%;width:100%;cursor: pointer;">
+															<%: decimal.Parse(round.NPSSize.ToString()).ToString("#.###") %>
+												</div>	
+												</a>
+											</font>										
+										</td>					
+								</tr>
+							<%} %>
+						</table>
+						</td>
+			<td style="width:50%" align="left">
+					<table id="NpsdaugeHeader" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+						<tr>
+							<td class="icontext" style="white-space: nowrap; background-image: url('/images/darkTheme/bg_main.png'); background-repeat: repeat; padding: 0px 0px 0px 0px;;">
+							<font  color="white">
+									<b>Gauge(Wall)</b>
+								</font>
+							</td>
+						</tr>				 
+					</table>
+			 		<table id="tblNpsGauges" border="1" cellpadding="0" cellspacing="0" width="100%" style="border-color:#D3D3D3;">		
+					</table>
+						</td>
+				</tr>
+			</table>
+			
+			<%--<%} %>--%>
+		</div>
+<%--					<select name="SelectShape" id="SelectShape" class="searchDropDown" style="width: 110px; min-width: 110px;">
+						<option>ALL</option>
+					</select>--%>
+					<%--<select name="SquareSizeID" id="SquareSizes" class="searchDropDown" style="width: 110px; min-width: 110px; display: none;">
+						<option value="0">ALL</option>
+						<% foreach (var square in Model.SquareSizes.OrderBy(x => x.Size)) { %>
+						 <option value="<%: square.SquareID %>">
+							<%: square.Size.ToString("#.###")%>
+							x
+							<%: square.Size.ToString("#.###")%></option>
+						<%}	 %>
+					</select>
+					<select name="RectangleSizeID" id="RectangleSizes" class="searchDropDown" style="width: 110px; min-width: 110px; display: none;">
+						<option value="0"><span style="padding: 0;">ALL</span></option>
+						<% foreach (var rectangle in Model.RectangleSizes.OrderBy(x => x.Size1).ThenBy(x => x.Size2)) { %><option value="<%: rectangle.RectangleID %>">
+							<%: rectangle.Size1.ToString("#.###")%>
+							x
+							<%: rectangle.Size2.ToString("#.###")%></option>
+						<% } %>
+					</select>
+					<select name="RoundSizeID" id="RoundSizes" class="searchDropDown" style="width: 110px; min-width: 110px; display: none;">
+						<option value="0">ALL</option>
+						<% foreach (var round in Model.RoundSizes.OrderBy(x => x.Size)) { %><option value="<%: round.RoundID %>">
+							<%: round.Size.ToString("#.###")%></option>
+						<% } %>
+					</select>
+					<select name="NPSSizeID" id="NPSSizes" class="searchDropDown" style="width: 110px; min-width: 110px; display: none;">
+						<option value="0">ALL</option>
+						<% foreach (var round in Model.NPSSizes.OrderBy(x => x.NPSSize)) { %><option value="<%: round.RoundID %>">
+							<%: decimal.Parse(round.NPSSize.ToString()).ToString("#.###") %></option>
+						<% } %>
+					</select>--%>
+
+					 <input type="hidden" value="0" id="RoundSizeID" name="RoundSizeID" />
+					 <input type="hidden" value="0" id="SquareSizeID" name="SquareSizeID" />
+					 <input type="hidden" value="0" id="RectangleSizeID" name="RectangleSizeID" />
+					  <input type="hidden" value="0" id="JumboSizeID" name="JumboSizeID" />
+						<input type="hidden" value="0" id="SpecialSizeID" name="SpecialSizeID" />
+					 <input type="hidden" value="0" id="NPSSizeID" name="NPSSizeID" />
+					 <input type="hidden" value="0" id="GaugeID" name="GaugeID" />
+					 <input type="hidden" value="0" id="hdnsqsize" name="hdnsqsize" />
+					 <input type="hidden" value="0" id="hdnsqrecsize" name="hdnsqrecsize" />
+					 <input type="hidden" value="0" id="hdnrecsize" name="hdnrecsize" />
+					 <input type="hidden" value="0" id="hdnJumbosize" name="hdnJumbosize" />
+					  <input type="hidden" value="0" id="hdnSpecialsize" name="hdnSpecialsize" />
+						<input type="hidden" value="0" id="hdnnpssize" name="hdnnpssize" />
+						<input type="hidden" value="0" id="hdnroundsize" name="hdroundnsize" />
+					 <input type="hidden" value="0" id="hdnguage" name="hdnguage" />
+				</td>
+
+			</tr>
+<%--
+			<tr>
+				<td width="3px">
+				</td>
+				<td class="icontext">
+					Gauge
+				</td>
+				<td class="icontext">
+					:
+				</td>
+				<td style="text-align: left;">
+					<select class="searchDropDown" style="width: 110px; min-width: 110px;" name="GaugeID" id="Gauges">
+						<option value="0">ALL</option>
+					</select>
+				</td>
+			</tr>--%>
+			<tr>
+				<td width="3px">
+				</td>
+				<td class="icontext">
+					Plant
+				</td>
+				<td class="icontext">
+					:
+				</td>
+				<td style="text-align: left;">
+					<select class="searchDropDown" id="LocationID" name="LocationID" style="width: 110px; min-width: 110px;" onchange="submitProductInquiry();">
+						<option value="0">ALL</option>
+						<% foreach (var plant in Model.Plants) {   %>
+						<option value="<%: plant.LocationID %>">
+							<%: plant.DisplayName %></option>
+						<% } %>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td width="3px">
+				</td>
+				<td class="icontext">
+					Grade
+				</td>
+				<td class="icontext">
+					:
+				</td>
+				<td>
+					<select class="searchDropDown" id="Grade" name="Grade" style="width: 110px;" onchange="submitProductInquiry();">
+						<option value="0">ALL</option>
+						<option value="A">A500 B/C</option>
+						<option value="C">CSA</option>
+						<option value="A513">A513</option>
+						<option value="AY50">AY50</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td width="3px">
+				</td>
+				<td class="icontext">
+					Include
+				</td>
+				<td class="icontext">
+					:
+				</td>
+				<td style="text-align: left;">
+					<input style="margin: 4px; cursor: pointer;" type="checkbox" name="excess" id="excess" /><label for="excess">Excess Prime</label><br />
+					<input style="margin: 4px; cursor: pointer;" type="checkbox" name="secondary" id="secondary" /><label for="secondary">Secondary</label>
+				</td>
+			</tr>
+			<tr>
+				<td width="3px">
+				</td>
+				<td colspan="3" style="text-align: center; display:inline;">
+					<table style="width: 100%">
+						<tr>
+							<td style="width: 33%; text-align: center; vertical-align: middle;">
+								<img alt="View in Excel" src="/Content/Images/icon-excel-small.png" id="Img1" style="height: 22px; cursor: pointer;" onclick="stockExport();" title="View in Excel">
+							</td>
+							<td style="width: 33%; text-align: center; vertical-align: middle;">
+								<img alt="Print Friendly View" style="cursor: pointer; height: 22px;" title="Print Friendly View" onclick="stockPrint();" src="/images/darkTheme/icons/iconPrint.png" id="Img2">
+							</td>
+							<td style="width: 33%; text-align: center; vertical-align: middle;">
+								<%--<%: Html.ParetoButton("Search", "productInquiryButton", new { type = "button" })%>--%>
+								<input type="button" name="Search" value="Search" style="display:none;" />
+								<input type="button" name="Search" value="Search" style="display:none;" />
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+	<% } %>
+<%--	<a href="#"  onmouseover="showproductdetails();">--%>
+	<% using (Html.TableWidget("<h3>Product Details</h3>", "prodDetails", "width: 165px; margin: 10px 0px 10px 10px;", false, TableWidgetExt.Theme.BlackTheme, 1, TableWidgetExt.OnStart.Hidden)) { %>
+<%--	</a>--%>
+	<% } %>
+<%--	<font color="red">Please contact ISR for<br />
+	 Birmingham bundling***</font>--%>
+	<% } %>
+    <% if(Model.CanViewPricing)
+       {%>
+        <%
+           //<h3 class=pCurrency style=\"word-spacing: 45px;\">Shipto USD/CWT</h3>            
+            using (Html.TableWidget("<table style=\"width: 100%\"><tr><td>Shipto</td><td style=\"width: 90%;text-align:right;\" class=\"pCurrency\">USD/CWT</td></tr></table>", "pricingDetails", "width: 165px; margin: 0px 0px 0px 0px;", false, TableWidgetExt.Theme.BlackTheme, 1, TableWidgetExt.OnStart.Hidden))
+           { %>
+        <% } %>
+	<% } %>
+    <div id="userInfo" style="display: none;">
+		<h4>
+			<a href="/Employee/Details/<%: Model.CurrentEmployee.UserID %>/" class="modal">
+				<%: Model.CurrentEmployee.FirstName%>&nbsp;<%: Model.CurrentEmployee.LastName%></a></h4>
+		<table cellpadding="0" cellspacing="0">
+			<tr>
+				<td colspan="2">
+					<%: (Model.CurrentEmployee.EmployeePosition.IsNull() ? string.Empty : Model.CurrentEmployee.EmployeePosition.Name)%>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<%: (Model.CurrentEmployee.Division.IsNull() ? string.Empty : Model.CurrentEmployee.Division.Name)%>&nbsp;<%: (Model.CurrentEmployee.Department.IsNull() ? string.Empty : Model.CurrentEmployee.Department.Name)%>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<%: Model.CurrentEmployee.PhoneNumber%>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<%: Model.CurrentEmployee.Email%>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<%: Model.CurrentEmployee.Domain%>\<%: Model.CurrentEmployee.SAMAccountName%>
+				</td>
+			</tr>
+		</table>
+	</div>
+</asp:Content>
+
+<asp:Content ID="RightContent" ContentPlaceHolderID="RightContent" runat="server">
+<!--<div id="printerDiv" style="display:none"></div> -->
+<div id="printerDiv" style="display:none" ></div>
+
+	@Html.Hidden("PrintHomeKendoSalesOrderBacklogURL")
+	@Html.Hidden("ExportHomeKendoSalesOrderBacklogURL")
+	@Html.Hidden("ExportHomeKendoOpenDeliveriesURL")
+	 if (Model.CurrentEmployee.HasRole((long)Enums.ApplicationRoles.JMCPortalATCEcommerce)) {
+	@*@Html.Kendo().Splitter()*@
+			.Name("vertical")
+			.Orientation(SplitterOrientation.Vertical)
+			.Panes(verticalPanes => {
+				verticalPanes.Add()
+						.Size("50%")
+						.HtmlAttributes(new { id = "top-pane" })
+						.Resizable(true)
+						.Collapsible(true)
+						.Scrollable(false)
+						.Content(() => { %>
+	<form method="post" action="/Orders/PrintHomeKendoSalesOrderBacklog" id="SalesOrderBacklogForm" name="SalesOrderBacklogForm">
+	</form>
+	@*@(Html.Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(model => model.Controller).Titled("Name");
+        columns.Add(model => model.Controller).Titled("Surname");
+        columns.Add(model => model.Controller).Titled("Marital status");
+
+        columns.Add(model => model.Controller).Titled("Age");
+        columns.Add(model => model.Controller).Titled("Birthday").Formatted("{0:d}");
+        columns.Add(model => model.Controller).Titled("Employed");
+    })
+    .Using(GridFilterMode.Header)
+    .Empty("No data found")
+    .Filterable()
+    .Sortable()
+    .Pageable()
+)*@
+	<div id="grid"></div>
+<script>
+$("#grid").kendoGrid({
+@*	 @foreach (var item in Model)
+    {
+        <li class="nav-item">
+            <a class="nav-link white-text @item.SelectedClass" asp-area="" asp-controller="@item.Controller" asp-action="@item.Action">
+                @item.Content
+            </a>
+        </li>  
+    }    
+	columns.Bound(Model=>Model.Content)*@
+  columns: [
+    { field: "SoldTo" ,filterable: true,sortable: true,},
+	{ field: "ShipTo" },
+    { command: ["edit", "destroy"] } // displays the built-in "edit" and "destroy" commands
+  ],
+  editable: "inline",
+  filterable: true,
+  sortable: true,
+  dataSource: {
+    data: [ {Id: 1, SoldTo: "Jane Doe",ShipTo:"Test" },{Id: 2, SoldTo: "Alex",ShipTo:"ERT" } ],
+    schema: {
+      model: {
+        id: "Id",
+        fields: {
+          name: { type: "string" }
+        }
+      }
+    }
+  }
+});
+</script>
+	@*@(Html.Kendo().Grid<JMC.Portal.Common.MVC.Models.OpenOrderItem>()*@
+        .Name("BacklogGrid")
+            .ToolBar(toolbar => {
+                toolbar.Template(() => { 
+	<p style="font-weight: bold; float: left; padding-top: 1px; padding-left: 2px;">Open Order Summary</p>
+	<p id="bldate" style="float: left; padding-top: 1px; padding-left: 2px;"></p>
+		<img alt="refresh" src="/Content/Images/icon-refresh-small.png" id="refreshIcon" title="Refresh Backlog" style="float: left; margin-top: -5px; display: none; cursor: pointer;" onclick="AsyncBacklog();" />
+		
+		<a style="float: left; color: #FFFFFF;" title="Save Grid Settings" href="#" onclick="SaveGridSettings('BacklogGrid', <%: (long)Enums.DataViews.OpenOrderSummary %>);">
+			<img alt="Save Grid Settings" src="/images/table_save.png" id="Img3" title="Save Grid Settings" style="margin-right: 10px; margin-left: 5px; width: 16px; height: 16px;" />	
+		</a>
+	 <a id="A1" onclick="PrintKendoSalesOrderBacklog();printFrame();" href="#" style="float: left; color: #FFFFFF; margin-right: 10px;">  
+  <!-- <a id="A1" onclick="printPage()" href="#" style="float: left; color: #FFFFFF; margin-right: 10px;">   -->
+			<img style="margin-right: 5px; width: 16px; height: 16px;" src="/images/darkTheme/icons/iconPrint.png" />
+	</a>
+	 <a style="float: left; color: #FFFFFF;" title="View in Excel" href="#" onclick="KendoOpenOrderSummaryExport();">
+			<img src="/images/Export_Excel.png" />
+		</a>
+
+	@*@ });*@
+            })
+        .Columns(columns => Model.KendoGridPersonDataViewBuilder.BuildKendoGridColumns(columns))
+        .HtmlAttributes(new { style = "width:100%;height:100%;" })
+        .Groupable()
+        .Sortable()
+				.Filterable(filterable => {
+					filterable.Operators(ops => {
+						ops.ForString(op => {
+							op.Clear();
+							op.Contains("Contains");
+							op.DoesNotContain("Does not contain");
+							op.IsEqualTo("Is equal to");
+							op.IsNotEqualTo("Is not equal to");
+							op.StartsWith("Starts With");
+							op.EndsWith("Ends With");
+						});
+					});
+				})
+        .Scrollable()
+        .Pageable(pageable => {
+            pageable.Refresh(true);
+            pageable.PageSizes(JMC.Data.Kendo.Default.PageSizes);
+        })
+        .Resizable(resize => resize.Columns(true))
+        .Reorderable(reorder => reorder.Columns(true))
+        .ColumnMenu()
+        .Events(ev => ev.DataBound("onDataBoundMarkFilters"))
+        .DataSource(dataSource => dataSource
+                .Ajax()
+                    .Aggregates(aggregates => {
+                        aggregates.Add(p => p.NotReady).Sum();
+                        aggregates.Add(p => p.Ready).Sum();
+                        aggregates.Add(p => p.Released).Sum();
+                        aggregates.Add(p => p.BOL).Sum();
+                        aggregates.Add(p => p.Open).Sum();
+                    })
+                    .PageSize(10)
+                    .Read(read => read.Action("KendoHomeSalesOrderBacklog", "Orders", new {
+                        id = Model.OpenOrderSummaryModel.sapSoldToId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSoldToId,
+                        secondID = Session["ShipToID"].ToLong(),
+                        thirdID = 0,
+                        fourthID = 0,
+                        fifthID = Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId
+                    }))
+
+                    .Filter(filters => Model.BuildKendoGridFilters(filters))
+                    .Sort(sorts => Model.KendoGridPersonDataViewBuilder.BuildKendoGridSorts(sorts))
+                    .Group(groups => Model.KendoGridPersonDataViewBuilder.BuildKendoGridGroups(groups))
+        ).Render(); %>
+
+	<% });
+    
+
+
+				verticalPanes.Add()
+						.Size("50%")
+						.HtmlAttributes(new { id = "middle-pane" })
+						.Resizable(true)
+						.Collapsible(true)
+						.Scrollable(false)
+						.Content(() => { %>
+	<form method="post" action="/Delivery/PrintKendoTodaysDeliveries" id="DeliveryForm" name="DeliveryForm">
+     <!--  <iframe name="ifr" style="display:none" ></iframe> -->
+	</form>
+	<% Html.Kendo().Grid<JMC.Portal.Business.DataModel.SAPSalesDeliveryModel>()
+								.Name("DeliveryGrid")
+								.ToolBar(toolbar => { toolbar.Template(() => { %>
+		<p style="font-weight: bold; float: left; padding-top: 1px; padding-left: 2px;">Departing Atlas today, Arriving today & tomorrow</p>		
+         <img alt="Refresh TMS Status" src="/Content/Images/icon-refresh-small.png" id="tmsRefresh" title="Refresh TMS Status" 
+            style="margin-right: 10px; margin-left: 5px; width: 16px; height: 16px; cursor: pointer;" onclick="shiptmentTracking();" />
+		<a style="float: left; color: #FFFFFF;" title="Save Grid Settings" href="#" onclick="SaveGridSettings('DeliveryGrid', <%: (long)Enums.DataViews.TodaysDeliveries %>);">
+			<img alt="Save Grid Settings11" src="/images/table_save.png" id="Img4" title="Save Grid Settings" style="margin-right: 10px; margin-left: 5px; width: 16px; height: 16px;" />	
+		</a>
+		<a title="Print View" id="todaysDeliveryPrint" href="#" onclick="KendoTodaysDeliveryPrint();printFrame();" style="float: left; color: #FFFFFF; margin-right: 10px;">
+			<img alt="Print Grid" style="margin-right: 5px; width: 16px; height: 16px;" src="/images/darkTheme/icons/iconPrint.png" />
+		</a>
+		<a id="todaysDeliveryExport"  title="View in Excel" href="#" onclick="KendoTodaysDeliveryExport();" style="float: left; color: #FFFFFF;" >
+			<img alt="Export Grid" src="/images/Export_Excel.png" />
+		</a>
+         <span style="float: right; color: #FFCC00;">Last Update time is reflected in time zone of sighting city(last known city).</span>
+	<% });
+								})
+            .Columns(columns => Model.TodaysDeliveriesKendoGridPersonDataViewBuilder.BuildKendoGridColumns(columns))
+								.HtmlAttributes(new { style = "width:100%;height:100%;" })
+								.Groupable()
+								.Sortable()
+								.Filterable(filterable => {
+									filterable.Operators(ops => {
+										ops.ForString(op => {
+											op.Clear();
+											op.Contains("Contains");
+											op.DoesNotContain("Does not contain");
+											op.IsEqualTo("Is equal to");
+											op.IsNotEqualTo("Is not equal to");
+											op.StartsWith("Starts With");
+											op.EndsWith("Ends With");
+										});
+									});
+								})
+								.Scrollable()
+								.Pageable(pageable => {
+									pageable.Refresh(true);
+									pageable.PageSizes(JMC.Data.Kendo.Default.PageSizes);
+								})
+								.Resizable(resize => resize.Columns(true))
+								.Reorderable(reorder => reorder.Columns(true))
+								.ColumnMenu()
+            .Events(ev => ev.DataBound("onDataBoundMarkFilters()"))
+								.DataSource(dataSource => dataSource
+									.Ajax()
+									.PageSize(JMC.Data.Kendo.Default.PageSize)
+                .Read(read => read.Action("KendoTodaysDeliveries", "Delivery"))
+                .Filter(filters => Model.BuildTodaysDeliveriesKendoGridFilters(filters))
+                .Sort(sorts => Model.TodaysDeliveriesKendoGridPersonDataViewBuilder.BuildKendoGridSorts(sorts))
+                .Group(groups => Model.TodaysDeliveriesKendoGridPersonDataViewBuilder.BuildKendoGridGroups(groups))
+                                 )
+                                .Render(); %>
+	<% });
+			})
+			.Render();
+	%>
+	<div id="soldToChangeHandler" exist="yes">
+	<script type="text/javascript" language="javascript">
+
+    var v_SoldTo = "0";
+		function SoldToChanged(sapSoldToId) {               
+			var url = '/Orders/KendoHomeSalesOrderBacklog/' + sapSoldToId + '/0/0/0/' + <%: Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId %>;
+			var printurl = '/Orders/PrintHomeKendoSalesOrderBacklog/?sapSoldToId=' + sapSoldToId + '&sapSalesOrgID=0&sapCustomerGroupID=0&sapSalesGroupID=' + <%: Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId %>;
+			var Exporturl = '/Orders/ExportKendoSalesOrderBacklogHome/?sapSoldToId=' + sapSoldToId + '&sapShipToId=0&&sapSalesOrgID=0&sapCustomerGroupID=0&sapSalesGroupID=' + <%: Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId %>;
+			var ExportOpenDeliveriesurl = '/Delivery/ExportKendoOpenShipments/?';
+
+			$('#PrintHomeKendoSalesOrderBacklogURL').val(printurl);
+			$('#ExportHomeKendoSalesOrderBacklogURL').val(Exporturl);
+			$('#ExportHomeKendoOpenDeliveriesURL').val(ExportOpenDeliveriesurl);
+				
+			GetBacklog();								
+            updateKendoDatasourceURL('BacklogGrid', url);		
+			refreshKendoGrid('DeliveryGrid');
+
+		}
+	function ShipToChanged(sapSoldToId, sapShipToId) {
+		var url = '/Orders/KendoHomeSalesOrderBacklog/' + sapSoldToId + '/' + sapShipToId + '/0/0/' + <%: Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId %>;
+		var printurl = '/Orders/PrintHomeKendoSalesOrderBacklog/?sapSoldToId=' + sapSoldToId + '&sapShipToID=' + sapShipToId +'&sapSalesOrgID=0&sapCustomerGroupID=0&sapSalesGroupID=' + <%: Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId %>;
+		var Exporturl = '/Orders/ExportKendoSalesOrderBacklogHome/?sapSoldToId=' + sapSoldToId + '&sapShipToID='+ sapShipToId +'&sapSalesOrgID=0&sapCustomerGroupID=0&sapSalesGroupID=' + <%: Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId %>;
+		var ExportOpenDeliveriesurl = '/Delivery/ExportKendoOpenShipments/?';
+
+		$('#PrintHomeKendoSalesOrderBacklogURL').val(printurl);
+		$('#ExportHomeKendoSalesOrderBacklogURL').val(Exporturl);
+		$('#ExportHomeKendoOpenDeliveriesURL').val(ExportOpenDeliveriesurl);
+
+		GetBacklog();				
+		updateKendoDatasourceURL('BacklogGrid', url);				
+		refreshKendoGrid('DeliveryGrid');
+	}
+
+   function printPage()
+   {
+          //  alert(" sold " + v_SoldTo);
+            // var hdnFlagVal = $("#hdnFlag").val();
+             //      alert("hdn : " + hdnFlagVal);        
+	   // PrintKendoSalesOrderBacklog();     
+        //    var div = document.getElementById("printerDiv");
+        //  div.innerHTML = '<iframe src="<%:Url.Action("PrintHomeKendoSalesOrderBacklog", "Orders",new {sapSoldToID = Model.OpenOrderSummaryModel.sapSoldToId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSoldToId,sapShipToID=0,sapSalesOrgID = 0,sapCustomerGroupID = 0,sapSalesGroupID = Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId}) %>" onload="this.contentWindow.print();"></iframe>';
+      //    var v = '<iframe src="<%:Url.Action("PrintHomeKendoSalesOrderBacklog", "Orders",new {sapSoldToID = "v_SoldTo"  ,sapShipToID=0,sapSalesOrgID = 0,sapCustomerGroupID = 0,sapSalesGroupID = Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId}) %>" ></iframe>';
+          //  alert(v);
+        //   v= v.replace ( "v_SoldTo" ,v_SoldTo );
+           //    alert(v);
+        //    div.innerHTML  = v ;
+   }
+
+
+	  function SQRecSizeselected(selectedTD,sizeId)
+   {
+//	 $('#SquareSizeID').val(sizeId);
+	 $('#GaugeID').val('0');
+	 $('#hdnguage').val('0');
+	 $('#hdnsqsize').val('0');
+	  if($('#hdnsqrecsize').val() == '0'){
+		 $('#hdnsqrecsize').val('1');
+		 getSquareRecSizesXY(sizeId);
+		// submitProductInquiry();
+		 $('#SquareTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "none");
+			$('.sqrecsizelink').css("color", "black");
+		 });
+		}
+		else{
+		 $('#hdnsqrecsize').val('0');
+		 $('#SquareTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "block");
+			$('.sqrecsizelink').css("color", "black");
+		 });
+
+		}
+
+
+		 		//$('#' + sizeTable).fadeToggle();
+	   $('#SqrecsizeHeader').css('display', 'block');
+		 $('#SqrecsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#SqrecsizeHeader').css("background-repeat", "repeat");
+		
+		 $('#'+selectedTD).css('display', 'block');
+		 $('#'+selectedTD).css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#'+selectedTD).css("background-repeat", "repeat");
+		 $('#'+selectedTD + ' a' ).css("color", "white");
+		 		  
+	}
+
+
+	  function SRSizeselected(selectedTD,sizeId,sizeshape)
+   {
+	 $('#SquareSizeID').val(sizeId);
+	 $('#GaugeID').val('0');
+	 $('#hdnguage').val('0');
+
+
+	  if($('#hdnsqsize').val() == '0'){
+		 $('#hdnsqsize').val('1');
+		 if( sizeshape == 'SQ'){
+				$('#sshape').val('Square');
+		 		$('#shape').val('Square');
+				shape = "Square";
+				$('#SquareSizeID').val(sizeId);
+				 getSquareGauges();
+		 }
+		 else{
+				$('#sshape').val('Rectangle');
+		  	 $('#shape').val('Rectangle');
+				shape = "Rectangle";
+				$('#RectangleSizeID').val(sizeId);
+				getRectangleGauges();
+		 }	 
+		
+		 submitProductInquiry();
+		 $('#SqRectSizesXY td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "none");
+			$('.sqrecsizelinkXY').css("color", "black");
+		 });
+		}
+		else{
+		 $('#hdnsqsize').val('0');
+		 $('#SqRectSizesXY td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "block");
+			$('.sqrecsizelinkXY').css("color", "black");
+		 });
+		}
+		
+		 		//$('#' + sizeTable).fadeToggle();
+//	   $('#SqRectSizesXYHeader').css('display', 'block');
+//		 $('#SqRectSizesXYHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+//     $('#SqRectSizesXYHeader').css("background-repeat", "repeat");
+		
+		 $('#'+selectedTD).css('display', 'block');
+		 $('#'+selectedTD).css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#'+selectedTD).css("background-repeat", "repeat");
+		 $('#'+selectedTD + ' a' ).css("color", "white");
+		 		  
+	}
+
+	function JumboSizeselected(selectedTD,sizeId,sizeshape)
+   {
+
+	 $('#JumboSizeID').val(sizeId);
+	 $('#GaugeID').val('0');
+	 $('#hdnguage').val('0');
+	// $('#'+selectedTD).style.bgcolor. = 'red';
+			$('#sshape').val('Jumbo');
+			//shape = "Rectangle";
+	  if($('#hdnJumbosize').val() == '0'){
+		 $('#hdnJumbosize').val('1');
+		 if( sizeshape == 'SQ'){
+		 		$('#shape').val('Square');
+				shape = "Square";
+				$('#SquareSizeID').val(sizeId);
+				
+		 }
+		 else{
+		  	 $('#shape').val('Rectangle');
+				shape = "Rectangle";
+				$('#RectangleSizeID').val(sizeId);
+				
+		 }	 
+		 getJumboGauges();
+		 submitProductInquiry();
+		 $('#JumboTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "none");
+			$('.jumbosizelink').css("color", "black");
+		 });
+		}
+		else{
+		 $('#hdnJumbosize').val('0');
+		 $('#JumboTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "block");
+			$('.jumbosizelink').css("color", "black");
+		 });
+		}
+		
+		 		//$('#' + sizeTable).fadeToggle();
+	   $('#JumbosizeHeader').css('display', 'block');
+		 $('#JumbosizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#JumbosizeHeader').css("background-repeat", "repeat");
+		
+		 $('#'+selectedTD).css('display', 'block');
+		 $('#'+selectedTD).css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#'+selectedTD).css("background-repeat", "repeat");
+		 $('#'+selectedTD + ' a' ).css("color", "white"); 
+		 
+	}
+
+		function SpecialSizeselected(selectedTD,sizeId,sizeshape)
+   {
+
+	 $('#SpecialSizeID').val(sizeId);
+	 $('#GaugeID').val('0');
+	 $('#hdnguage').val('0');
+	// $('#'+selectedTD).style.bgcolor. = 'red';
+			$('#sshape').val('Special');
+			//shape = "Rectangle";
+	  if($('#hdnSpecialsize').val() == '0'){
+		 $('#hdnSpecialsize').val('1');
+		 if( sizeshape == 'SQ'){
+		 		$('#shape').val('Square');
+				shape = "Square";
+				$('#SquareSizeID').val(sizeId);
+				
+		 }
+		 else{
+		  	 $('#shape').val('Rectangle');
+				shape = "Rectangle";
+				$('#RectangleSizeID').val(sizeId);
+				
+		 }	 
+		 getSpecialGauges();
+		 submitProductInquiry();
+		 $('#SpecialTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "none");
+			$('.Specialsizelink').css("color", "black");
+		 });
+		}
+		else{
+		 $('#hdnSpecialsize').val('0');
+		 $('#SpecialTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "block");
+			$('.Specialsizelink').css("color", "black");
+		 });
+		}
+		
+		 		//$('#' + sizeTable).fadeToggle();
+	   $('#SpecialsizeHeader').css('display', 'block');
+		 $('#SpecialsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#SpecialsizeHeader').css("background-repeat", "repeat");
+		
+		 $('#'+selectedTD).css('display', 'block');
+		 $('#'+selectedTD).css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#'+selectedTD).css("background-repeat", "repeat");
+		 $('#'+selectedTD + ' a' ).css("color", "white"); 
+		 
+	}
+		function RoundSizeselected(selectedTD,sizeId)
+   {
+
+	 $('#RoundSizeID').val(sizeId);
+	 $('#GaugeID').val('0');
+	 $('#hdnguage').val('0');
+	// $('#'+selectedTD).style.bgcolor. = 'red';
+	  if($('#hdnroundsize').val() == '0'){
+		 $('#hdnroundsize').val('1');
+		 	
+		 getRoundGauges();
+		 submitProductInquiry();
+		 $('#roundTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "none");
+			$('.roundsizelink').css("color", "black");
+		 });
+		}
+		else{
+		 $('#hdnroundsize').val('0');
+		 $('#roundTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "block");
+			$('.roundsizelink').css("color", "black");
+		 });
+		}
+		
+		 		//$('#' + sizeTable).fadeToggle();
+	   $('#roundsizeHeader').css('display', 'block');
+		 $('#roundsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#roundsizeHeader').css("background-repeat", "repeat");
+		
+		 $('#'+selectedTD).css('display', 'block');
+		 $('#'+selectedTD).css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#'+selectedTD).css("background-repeat", "repeat");
+		 $('#'+selectedTD + ' a' ).css("color", "white"); 
+		 
+	}
+
+	function NPSSizeselected(selectedTD,sizeId)
+   {
+
+	 $('#NPSSizeID').val(sizeId);
+	 $('#GaugeID').val('0');
+	 $('#hdnguage').val('0');
+	// $('#'+selectedTD).style.bgcolor. = 'red';
+	  if($('#hdnnpssize').val() == '0'){
+		 $('#hdnnpssize').val('1');
+		 	
+		 getNPSGauges();
+		 submitProductInquiry();
+		 $('#NPSTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "none");
+			$('.npssizelink').css("color", "black");
+		 });
+		}
+		else{
+		 $('#hdnnpssize').val('0');
+		 $('#NPSTable td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "block");
+			$('.npssizelink').css("color", "black");
+		 });
+		}
+		
+		 		//$('#' + sizeTable).fadeToggle();
+	   $('#npssizeHeader').css('display', 'block');
+		 $('#npssizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#npssizeHeader').css("background-repeat", "repeat");
+		
+		 $('#'+selectedTD).css('display', 'block');
+		 $('#'+selectedTD).css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#'+selectedTD).css("background-repeat", "repeat");
+		 $('#'+selectedTD + ' a' ).css("color", "white"); 
+		 
+	}
+
+
+	 function Gaugeselected(gaugeTable,selectedTD,gaugeId)
+   {
+	 
+	 $('#GaugeID').val(gaugeId);
+	
+		if($('#hdnguage').val() == '0'){
+			 $('#hdnguage').val('1');
+		 	 
+		 submitProductInquiry();
+		 $('#' + gaugeTable + ' td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "none");
+			$('.gaugelink').css("color", "black");
+		 });
+		}
+		else{
+			 $('#hdnguage').val('0');
+		 $('#' + gaugeTable + ' td').each(function(){
+		  $(this).css("background-image", "none");
+			$(this).css("display", "block");
+			$('.gaugelink').css("color", "black");
+		 });
+		}
+
+//	  $('#' + gaugeTable + ' td').each(function(){
+//		  $(this).css("background-image", "none");
+//			$('.gaugelink').css("color", "black");
+//		 });
+		  $('#'+selectedTD).css('display', 'block');
+			$('#'+selectedTD).css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#'+selectedTD).css("background-repeat", "repeat");
+		 $('#'+selectedTD + ' a' ).css("color", "white");
+
+		 //submitProductInquiry();
+	}
+		</script>
+	</div>
+	<% } %>
+</asp:Content>
+
+<asp:Content ID="Content3" ContentPlaceHolderID="HeadArea" runat="server">
+	<script language="javascript" type="text/javascript">
+
+			<% string urlopenOrdersummaryExport = Url.Action("ExportKendoSalesOrderBacklogHome", "Orders",new {
+						sapSoldToID = Model.OpenOrderSummaryModel.sapSoldToId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSoldToId,
+						sapShipToID = Session["ShipToID"].ToLong().IsNull() ? 0 : Session["ShipToID"].ToLong(),
+						sapSalesOrgID = 0,
+						sapCustomerGroupID = 0,
+						sapSalesGroupID = Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId
+					}); %>
+
+		keepUpdating = true;		
+
+		<% string urlPrintOrders = Url.Action("PrintHomeKendoSalesOrderBacklog", "Orders",new {
+						sapSoldToID = Model.OpenOrderSummaryModel.sapSoldToId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSoldToId,
+						sapSalesOrgID = 0,
+						sapCustomerGroupID = 0,
+						sapSalesGroupID = Model.OpenOrderSummaryModel.sapSalesGroupId.IsNull() ? 0 : Model.OpenOrderSummaryModel.sapSalesGroupId
+					}); %>
+					
+		$(document).ready(function () {
+			resizeSplitter('vertical');
+
+			$('#PrintHomeKendoSalesOrderBacklogURL').val('<%:urlPrintOrders %>');
+			$('#ExportHomeKendoSalesOrderBacklogURL').val('<%:urlopenOrdersummaryExport %>');
+
+			<% if (Model.CurrentEmployee.HasRole((long)Enums.ApplicationRoles.JMCPortalATCEcommerce)) { %>
+			
+			<% if(Model.BackLogAge.HasValue){ %>
+				$('#bldate').html('as of <%:Model.BackLogAge.Value.ToString("g") %>');
+				$('#refreshIcon').show();
+			<% } else {%> 
+				$('#bldate').html('');
+				$('#refreshIcon').show();
+			<% } %>
+
+			$('#SquareSizes').change(getSquareGauges);
+			$('#RectangleSizes').change(getRectangleGauges);
+			$('#RoundSizes').change(getRoundGauges);
+			$('#NPSSizes').change(getNPSGauges);
+			$('#prodInqPrint').click(function (e) {
+				e.preventDefault();
+				stockPrint();
+			});
+			$('#stockExport').click(function (e) {
+				e.preventDefault();
+				stockExport();
+			});
+			$('#productInquiry').submit(function (e) {
+				e.preventDefault();
+				submitProductInquiry();
+			});
+			$('#productInquiryButton').click(function (e) {
+				e.preventDefault();
+				$('#productCode').val($("#mainSearchProductSearch").val());
+				submitProductInquiry();
+			});
+
+			convertToKendoDropDowns('productInquiry', 'searchDropDown');
+			$("#SquareSizes").closest(".k-widget").hide();
+			$("#RectangleSizes").closest(".k-widget").hide();
+			$("#RoundSizes").closest(".k-widget").hide();
+			$("#NPSSizes").closest(".k-widget").hide();
+			<% } %>
+		});
+
+
+         
+
+		function PrintKendoSalesOrderBacklog(){
+
+			var urlPrintOrders = $('#PrintHomeKendoSalesOrderBacklogURL').val();
+			updateFormActionWithKendoDataSourceRequest('BacklogGrid', 'SalesOrderBacklogForm', urlPrintOrders);
+			updateFormPostDataWithKendoGridSettings('BacklogGrid', 'SalesOrderBacklogForm');
+		//	$('#SalesOrderBacklogForm').attr('target', '_blank');
+       $('#SalesOrderBacklogForm').attr('target', 'ifr');
+        // Show Refresh Model
+          var modal = document.getElementById('myModal');
+          var span = document.getElementsByClassName("close")[0];
+          modal.style.display = "block";
+          setTimeout(function () {modal.style.display = "none";} , 7000) ;            
+        // End Refresh  Model 
+
+
+//            if (navigator.userAgent.match(/msie/i) || navigator.userAgent.match(/trident/i) )
+//            {
+//                $('#SalesOrderBacklogForm').attr('target', '_blank');
+//            }
+//            else 
+//            {
+//             
+//                    // Show Refresh Model
+//                var modal = document.getElementById('myModal');
+//                var btn = document.getElementById("myBtn");
+//                var span = document.getElementsByClassName("close")[0];
+//                modal.style.display = "block";
+//                setTimeout(function () {modal.style.display = "none";} , 8000) ;            
+//                // End Refresh  Model 
+//                $('#SalesOrderBacklogForm').attr('target', 'ifr');
+//                
+//            }
+
+       // ifr
+			$('#SalesOrderBacklogForm').unbind('submit').submit();
+		}
+
+
+
+			<% if (Model.CurrentEmployee.HasRole((long)Enums.ApplicationRoles.JMCPortalATCEcommerce)) { %>
+		var allSquares = null;
+		var allRectangles = null;
+		var allRounds = null;
+		var allNPS = null;
+		var allSqRecs = null;
+		var allJumbos = null;
+		var allSpecials = null;
+
+		function loadAllGauges() {
+
+		if (allSqRecs == null) {
+				allSqRecs = new Array();
+				<% foreach (var sr in Model.SqRecGaugeSizes.ToLookup(x => x.sizeID)) { %>	
+					var aSqrec = new Object();aSqrec.squareID = <%:sr.Key %>;
+					var gaugeSqrecs = new Array();
+					<% foreach (var srgauge in sr) { %> var gaugeSR = new Object();gaugeSR.gaugeID = <%: srgauge.gauge.GaugeID %>;gaugeSR.size = '<%: srgauge.gauge.Gauge1.ToString("0.000") %>';gaugeSR.name = '<%: JMC.Portal.Common.MVC.Models.GaugeSizePair.getDesc(srgauge.gauge.Gauge1) %>';gaugeSqrecs.push(gaugeSR);<% } %>							
+					aSqrec.gauges = gaugeSqrecs;allSqRecs[<%:sr.Key %>] = aSqrec;
+				<% } %>
+			
+			}
+			if (allJumbos == null) {
+				allJumbos = new Array();
+				<% foreach (var sr in Model.JumboGaugeSizes.ToLookup(x => x.sizeID)) { %>	
+					var ajumbo = new Object();ajumbo.squareID = <%:sr.Key %>;
+					var gaugeJumbos = new Array();
+					<% foreach (var srgauge in sr) { %> var gaugeSR = new Object();gaugeSR.gaugeID = <%: srgauge.gauge.GaugeID %>;gaugeSR.size = '<%: srgauge.gauge.Gauge1.ToString("0.000") %>';gaugeSR.name = '<%: JMC.Portal.Common.MVC.Models.GaugeSizePair.getDesc(srgauge.gauge.Gauge1) %>';gaugeJumbos.push(gaugeSR);<% } %>							
+					ajumbo.gauges = gaugeJumbos;allJumbos[<%:sr.Key %>] = ajumbo;
+				<% } %>
+			
+			}
+
+			if (allSpecials == null) {
+				allSpecials = new Array();
+				<% foreach (var sr in Model.SpecialGaugeSizes.ToLookup(x => x.sizeID)) { %>	
+					var aSpecial = new Object();aSpecial.squareID = <%:sr.Key %>;
+					var gaugeSpecials = new Array();
+					<% foreach (var srgauge in sr) { %> var gaugeSR = new Object();gaugeSR.gaugeID = <%: srgauge.gauge.GaugeID %>;gaugeSR.size = '<%: srgauge.gauge.Gauge1.ToString("0.000") %>';gaugeSR.name = '<%: JMC.Portal.Common.MVC.Models.GaugeSizePair.getDesc(srgauge.gauge.Gauge1) %>';gaugeSpecials.push(gaugeSR);<% } %>							
+					aSpecial.gauges = gaugeSpecials;allSpecials[<%:sr.Key %>] = aSpecial;
+				<% } %>
+			
+			}
+
+			if (allSquares == null) {
+		
+				allSquares = new Array();
+				<% foreach (var squareGaugeSizes in Model.SquareGaugeSizes.ToLookup(x => x.squareID)) { %>
+					var aSquare = new Object();aSquare.squareID = <%:squareGaugeSizes.Key %>;
+					var gaugeSquares = new Array();
+					<% foreach (var squaregauge in squareGaugeSizes) { %>var gaugeSquare = new Object();gaugeSquare.gaugeID = <%: squaregauge.gauge.GaugeID %>;gaugeSquare.size = '<%: squaregauge.gauge.Gauge1.ToString("0.000") %>';gaugeSquare.name = '<%: JMC.Portal.Common.MVC.Models.GaugeSizePair.getDesc(squaregauge.gauge.Gauge1) %>';gaugeSquares.push(gaugeSquare);<% } %>
+					aSquare.gauges = gaugeSquares;allSquares[<%:squareGaugeSizes.Key %>] = aSquare;
+				<% } %>
+			}
+
+			if(allRectangles==null){
+						allRectangles = new Array();
+			<% foreach (var rect in Model.RectangleGaugeSizes.ToLookup(x=>x.rectangleID)) { %>
+					var aRectangle = new Object();aRectangle.rectangleID = <%:rect.Key%>;
+					var gaugeRectangles = new Array();
+					<% foreach (var rectgauges in rect) { %>var gaugeRect = new Object();gaugeRect.gaugeID = <%: rectgauges.gauge.GaugeID%>;gaugeRect.size = '<%: rectgauges.gauge.Gauge1.ToString("0.000") %>';gaugeRect.name = '<%: JMC.Portal.Common.MVC.Models.GaugeSizePair.getDesc(rectgauges.gauge.Gauge1)%>';gaugeRectangles.push(gaugeRect);<% } %>
+					aRectangle.gauges = gaugeRectangles;allRectangles[<%:rect.Key%>] = aRectangle;
+			<% } %>
+			}
+
+			if(allRounds==null){
+				allRounds = new Array();
+			<% foreach (var round in Model.RoundGaugeSizes.ToLookup(x=>x.roundID)) { %>
+					var aRound = new Object();aRound.roundID = <%:round.Key%>;
+					var gaugeRounds = new Array();
+					<% foreach (var roundgauges in round) { %>var gaugeRound = new Object();gaugeRound.gaugeID = <%: roundgauges.gauge.GaugeID%>;gaugeRound.size = '<%: roundgauges.gauge.Gauge1.ToString("0.000") %>';gaugeRound.name = '<%: JMC.Portal.Common.MVC.Models.GaugeSizePair.getDesc(roundgauges.gauge.Gauge1)%>';gaugeRounds.push(gaugeRound);<% } %>
+					aRound.gauges = gaugeRounds;allRounds[<%:round.Key%>] = aRound;
+			<% } %>
+			}
+
+			if(allNPS==null){
+				allNPS = new Array();
+			<% foreach (var round in Model.NPSGaugeSizes.ToLookup(x=>x.roundID)) { %>
+					var aRound = new Object();aRound.roundID = <%:round.Key%>;
+					var gaugeRounds = new Array();
+					<% foreach (var roundgauges in round) { %>var gaugeRound = new Object();gaugeRound.gaugeID = <%: roundgauges.gauge.GaugeID%>;gaugeRound.size = '<%: roundgauges.gauge.Gauge1.ToString("0.000") %>';gaugeRound.name = '<%: roundgauges.Description %>';gaugeRounds.push(gaugeRound);<% } %>
+					aRound.gauges = gaugeRounds;allNPS[<%:round.Key%>] = aRound;
+			<% } %>
+			}
+		}
+
+		var shape = "none";
+		function getSquareGauges(e) {
+			loadAllGauges();
+			var newData = [];
+			newData.push({
+						text: 'ALL',
+						value: 0,
+					});
+					$('#tblSquareRecGauges tbody').html('');
+			var gaugelist = allSqRecs[toNumOr0($('#SquareSizeID').val())];
+			var i = 0;
+			var evenOdd;
+			if (gaugelist != null && gaugelist != undefined) {
+			for (key in gaugelist.gauges) {
+			 if(i++%2 == 0){
+			  evenOdd = "even";
+			 }else{
+			  evenOdd = "odd";
+			 }
+					var obj = gaugelist.gauges[key];
+						$('#tblSquareRecGauges').append([
+						'<tr class="'+ evenOdd +'">',
+								'<td id=sq_'+obj.gaugeID+'><a class="gaugelink" href="#" onclick="Gaugeselected(\'tblSquareRecGauges\',\'sq_'+obj.gaugeID+'\','+ obj.gaugeID +');" style="color: black;"><div style="height:100%;width:100%">'+ obj.size + ' ' +  obj.name +'</div></a></td>',
+						'</tr>',
+						].join(''));
+				}
+			}
+
+		}
+
+		function getJumboGauges(e) {
+			loadAllGauges();
+			var newData = [];
+			newData.push({
+						text: 'ALL',
+						value: 0,
+					});
+					$('#tblJumboGauges tbody').html('');
+
+			var gaugelist = allJumbos[toNumOr0($('#JumboSizeID').val())];
+			var i = 0;
+			var evenOdd;
+			if (gaugelist != null && gaugelist != undefined) {
+			for (key in gaugelist.gauges) {
+			 if(i++%2 == 0){
+			  evenOdd = "even";
+			 }else{
+			  evenOdd = "odd";
+			 }
+					var obj = gaugelist.gauges[key];
+						$('#tblJumboGauges').append([
+						'<tr class="'+ evenOdd +'">',
+								'<td id=jumbo_'+obj.gaugeID+'><a class="gaugelink" href="#" onclick="Gaugeselected(\'tblJumboGauges\',\'jumbo_'+obj.gaugeID+'\','+ obj.gaugeID +');" style="color: black;"><div style="height:100%;width:100%">'+ obj.size + ' ' +  obj.name +'</div></a></td>',
+						'</tr>',
+						].join(''));
+				}
+			}
+
+		}
+
+		function getSpecialGauges(e) {
+			loadAllGauges();
+			var newData = [];
+			newData.push({
+						text: 'ALL',
+						value: 0,
+					});
+					$('#tblSpecialGauges tbody').html('');
+			var gaugelist = allSpecials[toNumOr0($('#SpecialSizeID').val())];
+			var i = 0;
+			var evenOdd;
+			if (gaugelist != null && gaugelist != undefined) {
+			for (key in gaugelist.gauges) {
+			 if(i++%2 == 0){
+			  evenOdd = "even";
+			 }else{
+			  evenOdd = "odd";
+			 }
+					var obj = gaugelist.gauges[key];
+						$('#tblSpecialGauges').append([
+						'<tr class="'+ evenOdd +'">',
+								'<td id=Sp_'+obj.gaugeID+'><a class="gaugelink" href="#" onclick="Gaugeselected(\'tblSpecialGauges\',\'Sp_'+obj.gaugeID+'\','+ obj.gaugeID +');" style="color: black;"><div style="height:100%;width:100%">'+ obj.size + ' ' +  obj.name +'</div></a></td>',
+						'</tr>',
+						].join(''));
+				}
+			}
+
+		}
+
+
+		function getSquareRecSizesXY(size1) {
+					
+			$('#SqRectSizesXY tbody').html('');
+			$('#tblSquareRecGauges tbody').html('');
+
+			var i = 0;
+			var evenOdd;
+
+			<% foreach (var sr in Model.SqRecSizes) { %>
+			 if(i++%2 == 0){
+			  evenOdd = "even";
+			 }else{
+			  evenOdd = "odd";
+			 }
+			 var sz1 = <%: sr.Size1 %>;
+			  if(sz1  == size1){
+						$('#SqRectSizesXY').append([
+						'<tr class="'+ evenOdd +'">',
+								'<td id=sqrec_'+<%:sr.sizeID %>+' style="width:100%;" ><a class="sqrecsizelinkXY" href="#" onclick="SRSizeselected(\'sqrec_'+<%:sr.sizeID %>+'\','+ <%:sr.sizeID %> +',\'<%:sr.shape %>' +'\');" style="color: black;"><div style="height:100%;width:100%;">'+ <%:sr.Size2 %> +'</div></a></td>',
+						'</tr>',
+						].join(''));
+				} 
+
+			<% } %>
+						
+
+		}
+
+
+		function getRectangleGauges(e) {
+			loadAllGauges();
+			var newData = [];
+			newData.push({
+						text: 'ALL',
+						value: 0,
+					});
+					$('#tblSquareRecGauges tbody').html('');
+					var gaugelist = allSqRecs[toNumOr0($('#RectangleSizeID').val())];
+			var i = 0;
+			var evenOdd;
+			if (gaugelist != null && gaugelist != undefined) {
+				for (key in gaugelist.gauges) {
+				 if(i++%2 == 0){
+						evenOdd = "even";
+					}else{
+							evenOdd = "odd";
+					}
+					var obj = gaugelist.gauges[key];
+						$('#tblSquareRecGauges').append([
+						'<tr class="'+ evenOdd +'">',
+								'<td id=rec_'+obj.gaugeID+'><a class="gaugelink" href="#" onclick="Gaugeselected(\'tblSquareRecGauges\',\'rec_'+obj.gaugeID+'\','+ obj.gaugeID +');" style="color: black;"><div style="height:100%;width:100%">'+ obj.size + ' ' +  obj.name +'</div></a></td>',
+						'</tr>',
+						].join(''));
+				}
+			}
+
+		}
+
+		function getRoundGauges(e) {
+			loadAllGauges();
+			var newData = [];
+			newData.push({
+						text: 'ALL',
+						value: 0,
+					});
+				$('#tblRoundGauges tbody').html('');
+			var gaugelist = allRounds[toNumOr0($('#RoundSizeID').val())];
+			var i = 0;
+			var evenOdd;
+			if (gaugelist != null && gaugelist != undefined) {
+				for (key in gaugelist.gauges) {
+				 if(i++%2 == 0){
+						evenOdd = "even";
+					 }else{
+						evenOdd = "odd";
+						}
+					var obj = gaugelist.gauges[key];
+				$('#tblRoundGauges').append([
+						'<tr class="'+ evenOdd +'">',
+								'<td id=rd_'+obj.gaugeID+'><a class="gaugelink" href="#" onclick="Gaugeselected(\'tblRoundGauges\',\'rd_'+obj.gaugeID+'\','+ obj.gaugeID +');" style="color: black;"><div style="height:100%;width:100%">'+ obj.size + ' ' +  obj.name +'</div></a></td>',
+						'</tr>',
+						].join(''));
+				}
+			}
+
+		}
+
+		function getNPSGauges(e) {
+			loadAllGauges();
+			var newData = [];
+			newData.push({
+						text: 'ALL',
+						value: 0,
+					});
+					$('#tblNpsGauges tbody').html('');
+			var gaugelist = allNPS[toNumOr0($('#NPSSizeID').val())];
+			var i = 0;
+			var evenOdd;
+			if (gaugelist != null && gaugelist != undefined) {
+				for (key in gaugelist.gauges) {
+				 if(i++%2 == 0){
+						evenOdd = "even";
+					}else{
+						evenOdd = "odd";
+					}
+					var obj = gaugelist.gauges[key];
+					$('#tblNpsGauges').append([
+						'<tr class="'+ evenOdd +'">',
+								'<td id=nps_'+obj.gaugeID+'><a class="gaugelink" href="#" onclick="Gaugeselected(\'tblNpsGauges\',\'nps_'+obj.gaugeID+'\','+ obj.gaugeID +');" style="color: black;"><div style="height:100%;width:100%">'+ obj.name +'</div></a></td>',
+						'</tr>',
+						].join(''));
+				}
+			}
+		}
+
+		function showAllSpecials() {		
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Red.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+			$('#shape').val('Special');
+			shape = "Special";
+			$('#sshape').val('Special');
+			$('#SpecialSizeID').val('0');
+			$('#SquareSizeID').val('0');
+			$('#RectangleSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#JumboDiv').hide();
+			$('#SpecialDiv').show();
+			$('#roundDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnsqsize').val('0')
+			 $('#hdnguage').val('0');
+
+			 $('#productCode').val('');
+
+			 $('#tblSpecialGauges tbody').html('');
+			 
+			 //$('#SqRectSizesXY tbody').html('');
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#SpecialTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.Specialsizelink').css("color", "black");
+		 });
+
+
+		 $('#SpecialsizeHeader').css('display', 'block');
+		 $('#SpecialsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#SpecialsizeHeader').css("background-repeat", "repeat");
+
+
+		 	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+		 $('#AllSpecialTD').css('display', 'block');
+		 $('#AllSpecialTD').css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#AllSpecialTD').css("background-repeat", "repeat");
+		 $('#AllSpecialTD'+ ' a' ).css("color", "white");
+			submitProductInquiry();
+		}
+
+
+		function showSpecials() {		
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Red.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+			$('#SpecialSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#JumboDiv').hide();
+			$('#SpecialDiv').show();
+			$('#roundDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnsqsize').val('0')
+			 $('#hdnguage').val('0');
+			 $('#hdnSpecialsize').val('0'); 
+			 $('#productCode').val('');
+
+			 $('#tblSpecialGauges tbody').html('');
+			 //$('#SqRectSizesXY tbody').html('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#SpecialTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.Specialsizelink').css("color", "black");
+		 });
+
+
+		 $('#SpecialsizeHeader').css('display', 'block');
+		 $('#SpecialsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+         $('#SpecialsizeHeader').css("background-repeat", "repeat");
+
+		 	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+
+		}
+
+function showAllJumbos() {		
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Red.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+			$('#shape').val('Jumbo');
+			shape = "Jumbo";
+			$('#sshape').val('Jumbo');
+			$('#JumboSizeID').val('0');
+			$('#RectangleSizeID').val('0');
+			$('#SquareSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#JumboDiv').show();
+			$('#roundDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnsqsize').val('0')
+			 $('#hdnguage').val('0');
+
+			 $('#productCode').val('');
+
+			 $('#tblJumboGauges tbody').html('');
+			 //$('#SqRectSizesXY tbody').html('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#JumboTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.jumbosizelink').css("color", "black");
+		 });
+
+
+		 $('#JumbosizeHeader').css('display', 'block');
+		 $('#JumbosizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#JumbosizeHeader').css("background-repeat", "repeat");
+
+
+		 	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+		 $('#AllJumboTD').css('display', 'block');
+		 $('#AllJumboTD').css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#AllJumboTD').css("background-repeat", "repeat");
+		 $('#AllJumboTD'+ ' a' ).css("color", "white");
+			submitProductInquiry();
+		}
+
+
+		function showJumbo() {		
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Red.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+			$('#JumboSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#JumboDiv').show();
+			$('#SpecialDiv').hide();
+			$('#roundDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnsqsize').val('0')
+			 $('#hdnguage').val('0');
+			 $('#hdnJumbosize').val('0');
+			 $('#productCode').val('');
+
+			 $('#tblJumboGauges tbody').html('');
+			 //$('#SqRectSizesXY tbody').html('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#JumboTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.jumbosizelink').css("color", "black");
+		 });
+
+
+		 $('#JumbosizeHeader').css('display', 'block');
+		 $('#JumbosizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#JumbosizeHeader').css("background-repeat", "repeat");
+
+
+		 	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+
+		}
+
+
+			function showSquareRecs() {		
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Red.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#rectangleDiv').hide();
+			$('#roundDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").show();
+			$('#SpecialDiv').hide();
+			$('#JumboDiv').hide();	
+			$('#hdnsqsize').val('0')
+			 $('#hdnguage').val('0');
+			 $('#hdnsqrecsize').val('0');
+
+			 $('#productCode').val('');
+
+			 $('#tblSquareRecGauges tbody').html('');
+			 $('#SqRectSizesXY tbody').html('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#SquareTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.sqrecsizelink').css("color", "black");
+		 });
+
+		 $('#SqrecsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#SqrecsizeHeader').css("background-repeat", "repeat");
+
+		 	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+			//getSquareGauges();
+			//submitProductInquiry();
+		}
+
+	function showSquare() {		
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Red.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+			$('#sshape').val('Square');
+			$('#shape').val('Square');
+			shape = "Square";
+			$('#SquareSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#rectangleDiv').hide();
+			$('#roundDiv').hide();
+			$('#SpecialDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").show();
+			$('#hdnsqsize').val('0')
+			 $('#hdnguage').val('0');
+
+			 $('#productCode').val('');
+
+			 $('#tblSquareRecGauges tbody').html('');
+			 $('#SqRectSizesXY tbody').html('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#SquareTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.sqrecsizelink').css("color", "black");
+		 });
+
+		 $('#SqrecsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#SqrecsizeHeader').css("background-repeat", "repeat");
+
+
+		 	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+			//getSquareGauges();
+		 $('#AllSQTD').css('display', 'block');
+		 $('#AllSQTD').css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#AllSQTD').css("background-repeat", "repeat");
+		 $('#AllSQTD'+ ' a' ).css("color", "white");
+			submitProductInquiry();
+		}
+
+		function showRectangle() {	
+		  	
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Red.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+
+			$('#shape').val('Rectangle');
+			$('#sshape').val('Rectangle');
+			shape = "Rectangle";
+			$('#RectangleSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			//$('#squareDiv').hide();
+			$('#roundDiv').hide();
+			$('#SpecialDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").show();
+			$('#hdnrecsize').val('0');
+			$('#hdnguage').val('0');
+			$('#productCode').val('');
+
+			 $('#tblSquareRecGauges tbody').html('');
+			 $('#SqRectSizesXY tbody').html('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+
+				$('#SquareTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.sqrecsizelink').css("color", "black");
+		 });
+
+		 $('#SqrecsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#SqrecsizeHeader').css("background-repeat", "repeat");
+
+
+			//setKendoDropDown($('#RectangleSizes'), 0, true);
+
+//			$("#SelectShape").closest(".k-widget").hide();
+//			$("#SquareSizes").closest(".k-widget").hide();
+//			$("#RectangleSizes").closest(".k-widget").show();
+//			$("#RoundSizes").closest(".k-widget").hide();
+//			$("#NPSSizes").closest(".k-widget").hide();
+
+     	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+			//getRectangleGauges();
+		 $('#AllRecsTD').css('display', 'block');
+		 $('#AllRecsTD').css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#AllRecsTD').css("background-repeat", "repeat");
+		 $('#AllRecsTD'+ ' a' ).css("color", "white");
+			submitProductInquiry();
+		}
+
+function showAllRound() {	
+
+			$('#roundIcon').attr('src', '/images/circle_red.png');	
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+	
+
+			$('#shape').val('RoundTube');
+			shape = "RoundTube";
+			$('#NPSSizeID').val('0');
+			$('#RoundSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').show();
+			$('#rectangleDiv').hide();
+			$('#roundDiv').show();
+			$('#SpecialDiv').hide();
+			$('#JumboDiv').hide();			
+			$('#npsDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnroundsize').val('0')
+			 $('#hdnguage').val('0');
+			 $('#tblRoundGauges tbody').html('');
+			 
+			 $('#productCode').val('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+
+			$('#roundTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.roundsizelink').css("color", "black");
+		 });
+
+		 $('#roundsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#roundsizeHeader').css("background-repeat", "repeat");
+
+
+			$('#RoundTube').prop('checked', true);
+			$('#RoundNPS').prop('checked', false);
+		 $('#AllRoundTD').css('display', 'block');
+		 $('#AllRoundTD').css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+     $('#AllRoundTD').css("background-repeat", "repeat");
+		 $('#AllRoundTD'+ ' a' ).css("color", "white");
+			//getRoundGauges();
+			submitProductInquiry();
+		}
+		function showRound() {	
+
+			$('#roundIcon').attr('src', '/images/circle_red.png');	
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+	
+
+			$('#shape').val('RoundTube');
+			shape = "RoundTube";
+			$('#NPSSizeID').val('0');
+			$('#RoundSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').show();
+			$('#rectangleDiv').hide();
+			$('#roundDiv').show();
+			$('#SpecialDiv').hide();
+			$('#JumboDiv').hide();			
+			$('#npsDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnroundsize').val('0')
+			 $('#hdnguage').val('0');
+
+			 $('#productCode').val('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+
+			$('#roundTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.roundsizelink').css("color", "black");
+		 });
+
+		 $('#roundsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#roundsizeHeader').css("background-repeat", "repeat");
+
+
+			$('#RoundTube').prop('checked', true);
+			$('#RoundNPS').prop('checked', false);
+
+			getRoundGauges();
+			//submitProductInquiry();
+		}
+
+		function showNPS() {
+	
+				$('#roundIcon').attr('src', '/images/circle_red.png');	
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#shape').val('RoundNPS');
+			shape = "RoundNPS";
+			$('#NPSSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').show();
+			$('#rectangleDiv').hide();
+			$('#roundDiv').hide();
+			$('#SpecialDiv').hide();
+			$('#npsDiv').show();
+			$('#JumboDiv').hide();	
+			$("#squareDiv").hide();
+			$('#hdnnpssize').val('0')
+			 $('#hdnguage').val('0');
+
+			 $('#productCode').val('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+
+			$('#NPSTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.npssizelink').css("color", "black");
+		 });
+
+		 $('#npssizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+     $('#npssizeHeader').css("background-repeat", "repeat");
+
+
+			$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', true);
+
+			getNPSGauges();
+			//submitProductInquiry();
+
+
+		}
+
+		function showAllNPS() {
+	
+				$('#roundIcon').attr('src', '/images/circle_red.png');	
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#shape').val('RoundNPS');
+			shape = "RoundNPS";
+			$('#NPSSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').show();
+			$('#rectangleDiv').hide();
+			$('#roundDiv').hide();
+			$('#SpecialDiv').hide();
+			$('#npsDiv').show();
+			$('#JumboDiv').hide();	
+			$("#squareDiv").hide();
+			$('#hdnnpssize').val('0')
+			 $('#hdnguage').val('0');
+
+			 $('#productCode').val('');
+			  $('#tblNpsGauges tbody').html('');
+			 
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+
+			$('#NPSTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.npssizelink').css("color", "black");
+		 });
+
+		 $('#npssizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+        $('#npssizeHeader').css("background-repeat", "repeat");
+
+
+			$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', true);
+		 
+		 $('#AllNPSTD').css('display', 'block');
+		 $('#AllNPSTD').css("background-image", "url('/images/darkTheme/productinuiry_bg.png')");
+        $('#AllNPSTD').css("background-repeat", "repeat");
+		 $('#AllNPSTD'+ ' a' ).css("color", "white");
+			//getNPSGauges();
+			submitProductInquiry();
+
+
+		}
+
+
+
+        function showShurikenNutKeeper() {
+		
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+			$('#SpecialSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#JumboDiv').hide();
+			$('#SpecialDiv').hide();
+			$('#roundDiv').hide();
+			$('#npsDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnsqsize').val('0')
+			 $('#hdnguage').val('0');
+			 $('#hdnSpecialsize').val('0'); 
+			 $('#productCode').val('');
+
+			 $('#tblSpecialGauges tbody').html('');
+			 //$('#SqRectSizesXY tbody').html('');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#SpecialTable td').each(function(){
+		    $(this).css("background-image", "none");
+				$(this).css("display", "block");
+			$('.Specialsizelink').css("color", "black");
+		 });
+
+
+		 $('#SpecialsizeHeader').css('display', 'block');
+		 $('#SpecialsizeHeader').css("background-image", "url('/images/darkTheme/bg_main.png')");
+         $('#SpecialsizeHeader').css("background-repeat", "repeat");
+
+
+		 	$('#RoundTube').prop('checked', false);
+			$('#RoundNPS').prop('checked', false);
+
+            ///SoldTo/Details/9236
+            var $this = $(this);
+				var horizontalPadding = 30;
+				var verticalPadding = 50;
+				modalWindowIFrame = $('<iframe 	id="modalWindowIFrame" class="modalWindowIFrame" src="/StructuralNutKeeper/StructuralNutKeeper" />').dialog({
+					title: ($this.attr('title')) ? $this.attr('title') : '&nbsp;',
+					autoOpen: true,
+					width: 850,
+					height: 700,
+					modal: true,
+					resizable: false,
+					autoResize: false,
+					draggable: false,
+					close: function () {
+					    //startScrolling(); 
+                    }
+				}).width(600 - horizontalPadding).height(700 - verticalPadding);
+
+
+		}
+
+
+		function stockPrint() {
+		//	$('#productInquiry').attr('action', '/StockRollings/Print/').attr('target', '_blank');
+          $('#productInquiry').attr('action', '/StockRollings/Print/').attr('target', 'ifr');
+     //  alert("main print ");
+      
+        // Show Refresh Model
+          var modal = document.getElementById('myModal');
+            //var btn = document.getElementById("myBtn");
+           var span = document.getElementsByClassName("close")[0];
+          modal.style.display = "block";
+          setTimeout(function () {modal.style.display = "none";} , 7000) ;            
+            // End Refresh  Model 
+
+
+//             if (navigator.userAgent.match(/msie/i) || navigator.userAgent.match(/trident/i) )
+//                {
+//                    $('#productInquiry').attr('action', '/StockRollings/Print/').attr('target', '_blank');
+//                }
+//            else 
+//                {             
+//                          // Shiw Refresh Model
+//                    var modal = document.getElementById('myModal');
+//                    var btn = document.getElementById("myBtn");
+//                    var span = document.getElementsByClassName("close")[0];
+//                    modal.style.display = "block";
+//                    setTimeout(function () {modal.style.display = "none";} , 8000) ;            
+//                    // End Refresh  Model 
+//                     $('#productInquiry').attr('action', '/StockRollings/Print/').attr('target', 'ifr');
+//                
+//                }
+
+
+			$('#productInquiry').unbind('submit').submit();
+			$('#productInquiry').removeAttr('target').submit(function (e) {
+				e.preventDefault();
+				submitProductInquiry();
+			});
+
+            printFrame();
+
+		}
+
+		function showproductdetails(){
+			$('#prodDetails').hide();
+		}
+
+        function stockAndPrint() {
+            //	$('#productInquiry').attr('action', '/StockRollings/Print/').attr('target', '_blank');
+            $('#productInquiry').attr('action', '/StockRollings/Print/').attr('target', 'ifr');
+
+            // Show Refresh Model
+            var modal = document.getElementById('myModal');
+            //var btn = document.getElementById("myBtn");
+            var span = document.getElementsByClassName("close")[0];
+            modal.style.display = "block";
+            setTimeout(function () {                                       
+                printFrame(function() {                     
+                       modal.style.display = "none"; 
+                    });                 
+            } , 9000) ;            
+            // End Refresh  Model 
+
+            $('#productInquiry').unbind('submit').submit();
+            $('#productInquiry').removeAttr('target').submit(function (e) {
+                e.preventDefault();
+                submitProductInquiry();
+            });  
+        }
+
+		function submitProductInquiry() {
+			ClickEvent(1);
+			$("#prodDetails .table-content").html('<img src="/images/loading.gif" style="padding:10px;">');
+			$('#prodDetails').show();
+			$('#AnnoucementsWidget').hide();
+
+            $("#pricingDetails .table-content").html('<img src="/images/loading.gif" style="padding:10px;">');
+		    $('#pricingDetails').show();
+
+			$("#HeaderTitle").html("Stock Rollings");
+			$("#TopNav td").css("background-image", "");
+			$("#TopNav td").css("background-repeat", "");
+			$("#TopNavStockRollings").css("background-image", "url('/images/darkTheme/backgroundTopNavOn.png')");
+			$("#TopNavStockRollings").css("background-repeat", "repeat");
+			$("#TopNavStockRollings" + " a").css("color", "#FFFFFF");
+			$('#rightAJAXContent').empty();
+			$("#AJAXContentLoading").attr('style', '').show();
+			$('#TopNavButtons').html('<button style="float: right; margin: 5px; display: none" class="AddToCartButton">Update Shopping Cart</button>');
+			$('#rightAJAXContent').empty();
+
+			MultiPost('productInquiry', 'prodDetails .table-content', '/StockRollings/GetBundling/');
+            MultiPostPricing('productInquiry', 'pricingDetails .table-content', '/StockRollings/GetDeliveredPricing/');
+			MultiPostProductInq('productInquiry', 'rightAJAXContent', '/StockRollings/ProductInquiry/', function () { $('#AJAXContentLoading').hide(); });
+		}
+
+
+		<% } %>
+
+
+			$('#productInquiryButton').click(function (e) {
+				e.preventDefault();
+				$('#productCode').val($("#mainSearchProductSearch").val());
+				submitProductInquiry();
+			});
+
+function SearchByProductCode(element, e){
+	var charCode;
+    if(e && e.which){
+        charCode = e.which;
+    }else if(window.event){
+        e = window.event;
+        charCode = e.keyCode;
+    }
+    if(charCode == 13) {
+        event.preventDefault();
+			$('#JumboIcon').attr('src', '/images/Jumbo-Grey.png');
+			$('#SqRecIcon').attr('src', '/images/Sq-Rect-Grey.png');
+			$('#roundIcon').attr('src', '/images/circle_grey.png');
+			$('#SpecialIcon').attr('src', '/images/Special-Grey.png');
+
+			$('#NPSSizeID').val('0');
+			$('#RoundSizeID').val('0');
+			$('#SquareSizeID').val('0');
+			$('#RectangleSizeID').val('0');
+			$('#GaugeID').val('0');
+			$('#roundshape').hide();
+			$('#rectangleDiv').hide();
+			$('#roundDiv').hide();
+			$('#SpecialDiv').hide();
+			$('#npsDiv').hide();
+			$('#JumboDiv').hide();
+			$("#squareDiv").hide();
+			$('#hdnnpssize').val('0')
+			$('#hdroundnsize').val('0')
+			$('#hdnrecsize').val('0')
+			$('#hdnsqsize').val('0')
+			$('#hdnguage').val('0');
+
+			setKendoDropDown($('#LocationID'), 0, false);
+			setKendoDropDown($('#Grade'), 0, false);
+			$('#productCode').val($("#mainSearchProductSearch").val());
+			submitProductInquiry();
+    }
+	}
+
+		function KendoOpenOrderSummaryExport(){
+		var urlExportOrderSummary = $('#ExportHomeKendoSalesOrderBacklogURL').val();
+		updateFormActionWithKendoDataSourceRequest('BacklogGrid', 'SalesOrderBacklogForm', urlExportOrderSummary);
+		updateFormPostDataWithKendoGridSettings('BacklogGrid', 'SalesOrderBacklogForm', urlExportOrderSummary);
+		$('#SalesOrderBacklogForm').unbind('submit').submit();
+	}
+    <% string urlPrintDelivery = "/Delivery/PrintKendoTodaysDeliveries/?"; %>
+	function KendoTodaysDeliveryPrint(){
+        updateFormActionWithKendoDataSourceRequest('DeliveryGrid', 'DeliveryForm', '<%: urlPrintDelivery %>');
+        updateFormPostDataWithKendoGridSettings('DeliveryGrid', 'DeliveryForm');
+        $('#DeliveryForm').attr('target', 'ifr');
+        // Show Refresh Model
+        var modal = document.getElementById('myModal');
+        var span = document.getElementsByClassName("close")[0];
+        modal.style.display = "block";
+        setTimeout(function () {modal.style.display = "none";} , 7000) ;            
+        // End Refresh  Model 
+        console.log('submitting');
+        $('#DeliveryForm').unbind('submit').submit();
+	}
+
+	<% string urlExportDelivery = "/Delivery/ExportKendoTodaysDeliveries/?"; %>
+	function KendoTodaysDeliveryExport(){
+		updateFormActionWithKendoDataSourceRequest('DeliveryGrid', 'DeliveryForm', '<%: urlExportDelivery %>');
+		updateFormPostDataWithKendoGridSettings('DeliveryGrid', 'DeliveryForm', '<%: urlExportDelivery %>');
+		$('#DeliveryForm').unbind('submit').submit();
+	}
+    function shiptmentTracking(){       
+        shipmentNumbers = [];
+        var currency =$("#useSoldToCur").val();
+        var gridData = $("#DeliveryGrid").data("kendoGrid").dataSource;
+        kendo.ui.progress($("#DeliveryGrid"), true);
+        $.each(gridData.data(),function (index, item) {
+               shipmentNumbers.push(item.Number);	
+        });
+        $.ajax({
+		    cache: false,
+		    type: "GET",
+            traditional: true,
+		    data: {             
+             ids: shipmentNumbers,
+             currency : $("#useSoldToCur").val()
+            },
+		    url: '/Delivery/ShipmentTrackingData/',
+		    success: function (jsonData) {
+                if(jsonData != undefined) {     
+                     $.each(gridData.data(),function (index, shipment) {                      
+                       var finder = $.grep(jsonData.Events, function (event) { 
+                            return event.Delivery == shipment.Number
+                        });
+                        if(finder[0] != undefined) { 
+                            if(finder[0].Status == "Error" || finder[0].Status == "Unknown" || finder[0].Status == "Tracking Not Avaialble")
+                                return;
+                            var dateInt =  parseInt(finder[0].SightingTime.substr(6));                            
+                            var lastDate = kendo.toString(new Date(dateInt),"G");
+                            shipment.set('LastUpdate',lastDate);
+                            shipment.set('DeliveryLocation',finder[0].DestinationCity+ "," + finder[0].DestinationState);
+                            shipment.set('DeliveryStatus',finder[0].Status);
+                        }
+                    });
+                }
+                kendo.ui.progress($("#DeliveryGrid"), false);
+		    }
+	    });
+    }
+	</script>
+</asp:Content>
+

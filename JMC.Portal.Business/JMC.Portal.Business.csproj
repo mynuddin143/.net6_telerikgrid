@@ -1,0 +1,123 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AtlasQMModel\**" />
+    <Compile Remove="DataModel\**" />
+    <Compile Remove="IntranetModelss\**" />
+    <Compile Remove="IntranetModel\**" />
+    <Compile Remove="SmartGlanceModel\**" />
+    <EmbeddedResource Remove="AtlasQMModel\**" />
+    <EmbeddedResource Remove="DataModel\**" />
+    <EmbeddedResource Remove="IntranetModelss\**" />
+    <EmbeddedResource Remove="IntranetModel\**" />
+    <EmbeddedResource Remove="SmartGlanceModel\**" />
+    <None Remove="AtlasQMModel\**" />
+    <None Remove="DataModel\**" />
+    <None Remove="IntranetModelss\**" />
+    <None Remove="IntranetModel\**" />
+    <None Remove="SmartGlanceModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Box.cs" />
+    <Compile Remove="City.cs" />
+    <Compile Remove="CommonFunctions.cs" />
+    <Compile Remove="Country.cs" />
+    <Compile Remove="CustomerApplicationRoleProvider.cs" />
+    <Compile Remove="DataView.cs" />
+    <Compile Remove="DataViewColumn.cs" />
+    <Compile Remove="DB.cs" />
+    <Compile Remove="DealRequestCommon.cs" />
+    <Compile Remove="FiscalYear.cs" />
+    <Compile Remove="GetSAPMaterialPricing.cs" />
+    <Compile Remove="Mill.cs" />
+    <Compile Remove="MillException.cs" />
+    <Compile Remove="PersonDataViewColumn.cs" />
+    <Compile Remove="PersonDataViewColumnTemplate.cs" />
+    <Compile Remove="PersonDataViewTemplate.cs" />
+    <Compile Remove="Plant.cs" />
+    <Compile Remove="Portal.Designer.cs" />
+    <Compile Remove="PriceChangeRequest.cs" />
+    <Compile Remove="PriceChangeRequestItem.cs" />
+    <Compile Remove="RandomLengthSAPSoldTo.cs" />
+    <Compile Remove="RoleController.cs" />
+    <Compile Remove="SAPCharacteristicOption.cs" />
+    <Compile Remove="SAPCondition.cs" />
+    <Compile Remove="SAPConditionGroup.cs" />
+    <Compile Remove="SAPCustomerGroup.cs" />
+    <Compile Remove="SAPDelivery.cs" />
+    <Compile Remove="SAPIncoTerms.cs" />
+    <Compile Remove="SAPMaterial.cs" />
+    <Compile Remove="SAPPricing.cs" />
+    <Compile Remove="SAPPricingHelper.cs" />
+    <Compile Remove="SAPRolling.cs" />
+    <Compile Remove="SAPSalesGroup.cs" />
+    <Compile Remove="SAPSalesOrder.cs" />
+    <Compile Remove="SAPSalesOrderItem.cs" />
+    <Compile Remove="SAPScrapOrder.cs" />
+    <Compile Remove="SAPShipTo.cs" />
+    <Compile Remove="SAPSoldTo.cs" />
+    <Compile Remove="SAPStock.cs" />
+    <Compile Remove="SAPVendor.cs" />
+    <Compile Remove="ScrapSale.cs" />
+    <Compile Remove="ScrapSAPSoldTo.cs" />
+    <Compile Remove="ShippingCartSAPSalesOrderItem.cs" />
+    <Compile Remove="ShoppingCartSAPRolling.cs" />
+    <Compile Remove="SoldToShipTo.cs" />
+    <Compile Remove="State.cs" />
+    <Compile Remove="Trailer.cs" />
+    <Compile Remove="Truck.cs" />
+    <Compile Remove="Using.cs" />
+    <Compile Remove="WebReleasePlant.cs" />
+    <Compile Remove="WebReleasePlantSAPSalesOrderItem.cs" />
+    <Compile Remove="WTCSAPSalesOrder.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClassDiagram1.cd" />
+    <None Remove="Portal.edmx" />
+    <None Remove="PortalModels.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="netstandard-System.Data.Linq" Version="1.0.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
+    <PackageReference Include="System.DirectoryServices" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.10.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.10.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JMC\JMC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\Portal\Assemblies\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

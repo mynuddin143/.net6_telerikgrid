@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+            asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+            asp-fallback-test="window.jQuery">
+    </script>
+    <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+            asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+    </script>
+         <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.common-bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.bootstrap.min.css" />
+    <script src="~/lib/kendo-ui-core/js/kendo.ui.core.min.js"></script>
+     <link href="~/css/mvc-grid.css" rel="stylesheet">
+</head>
+<body style="background-color: #941800;">
+    <div>
+        @RenderBody()
+        <script src="~/js/mvc-grid.js"></script>
+         <script>
+           document.querySelectorAll(".mvc-grid").forEach(element => new MvcGrid(element));
+        </script>
+    </div>
+    <div>
+        <footer style="color:white;">
+            <div class="container">
+                &copy; 2014 JMC Steel Group. All rights reserved.
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

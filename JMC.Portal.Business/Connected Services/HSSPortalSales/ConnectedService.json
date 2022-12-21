@@ -1,0 +1,16 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "http://jmaf-aecc-d.jmcsteel.local:8000/sap/bc/srt/wsdl/flv_10002P111AD1/sdef_url/ZWS_HSS_PORTAL_SALES?sap-client=050"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, JMC.Portal.Business.HSSPortalAPOSlitter"
+    ],
+    "targetFramework": "net6.0",
+    "typeReuseMode": "All"
+  }
+}

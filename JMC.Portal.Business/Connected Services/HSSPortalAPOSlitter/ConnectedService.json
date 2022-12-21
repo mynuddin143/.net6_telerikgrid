@@ -1,0 +1,16 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "http://jmaf-scm-d:8000/sap/bc/srt/wsdl/sdef_ZWS_HSS_PORTAL_APO_SLITTER/wsdl11/ws_policy/document?sap-client=100"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, JMC.Portal.Business.WheatlandPortal"
+    ],
+    "targetFramework": "net6.0",
+    "typeReuseMode": "All"
+  }
+}

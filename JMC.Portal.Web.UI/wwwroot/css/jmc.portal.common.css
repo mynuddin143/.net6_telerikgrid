@@ -1,0 +1,279 @@
+﻿
+
+/* Kendo */
+
+/* Drop Down */
+.k-popup .k-list .k-item {
+	white-space: nowrap;
+	cursor: pointer;
+	padding-right: 20px;
+}
+/* END Drop Down */
+/* Grid */
+.k-grid table {
+	border-spacing: 0;
+}
+
+.k-grid-header .k-header {
+	background-image: url('/images/darkTheme/backgroundContentHeaderLarge.png');
+	background-repeat: repeat-x;
+	text-align: center;
+}
+.k-grid-header .k-header.k-header-filtered {
+	/*background-image: url('/images/darkTheme/backgroundContentHeaderLargeFilter.png') !important;*/
+}
+.k-grid-header .k-header.k-header-filtered a.k-link {
+	background-image: url('/images/filter.png') !important;
+	background-position: 5px 50%;
+	background-repeat: no-repeat;
+}
+.k-icon.k-filter {
+   background-image: url('/Content/kendo/Moonlight/sprite.png');   
+}
+.k-grid-filter.k-state-active
+{
+  background-color: transparent;
+}
+div.fillCell {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: .4em .6em;
+}
+
+td.fillCell {
+	padding: 0 !important;
+	position: relative;
+	/*height:1px;*/
+}
+
+td.fillCell > div{
+	height:100%;
+}
+
+.k-grid-header th, .k-grid-header th .k-link:link, .k-grid-header th .k-link:visited {
+	font-weight: bold !important;
+	color: #FFFFFF;
+}
+
+.k-footer-template td, .k-group-footer td {
+	position: relative;
+	font-weight: bold;
+	padding: 0 !important;
+}
+
+.k-grouping-row td {
+	border-bottom: 1px solid #C5C5C5;
+}
+
+.k-grouping-header {
+	background-image: none, linear-gradient(rgb(246, 246, 246) 0px, rgb(234, 234, 234) 100%);
+}
+
+.k-grouping-header .k-link, .k-pager-numbers .k-link {
+	color: #2e2e2e;
+}
+
+.k-grouping-row > th, .k-grouping-row > td {
+	background-color: transparent;
+}
+
+.k-grouping-row {
+	background-image: none; /*background-image: none, linear-gradient(rgb(246, 246, 246) 0px, rgb(234, 234, 234) 100%);*/
+}
+
+.k-grid td {
+	padding: .2em .3em;
+}
+
+.k-group-footer td, .k-grouping-row td {
+	padding: .4em .6em;
+	line-height: 1.6em;
+}
+
+.k-footer-template > th, .k-footer-template > td, .k-group-footer > th, .k-group-footer > td {
+	background-color: transparent;
+}
+
+.noFooter .k-footer-template > th, . noFooter .k-footer-template > td {
+	display: none;
+}
+
+.k-footer-template > th, .k-footer-template > td {
+	padding: 0.4em 0.6em;
+	line-height: 1.6em;
+}
+
+.k-footer-template, .k-group-footer {
+	background-color: #FFFFFF;
+	background-image: none;
+}
+
+.k-grid-toolbar {
+	background-image: url('/images/darkTheme/backgroundLeftContentHeader.png');
+	background-repeat: repeat-x;
+}
+
+.k-toolbar > table {
+	display: inline-table;
+	width: auto;
+}
+
+.k-toolbar > table > tbody > tr > th {
+	font-weight: bold;
+	text-align: left;
+}
+
+.k-toolbar {
+	color: #FFFFFF;
+}
+
+.k-toolbar > table > tbody > tr > th, .k-toolbar > table > tbody > tr > td {
+	border: none;
+	padding: 0;
+}
+
+.k-group-footer > th, .k-group-footer > td {
+	background-color: transparent;
+}
+
+tr.k-grouping-row {
+	background-color: #A4D1FF; /*#CCCC99;/*#CCFFFF;/*FFCC99*/
+}
+
+tr.k-grouping-row .k-group-cell + td {
+	background-color: #D6D6AD;
+}
+
+tr.k-grouping-row .k-group-cell + .k-group-cell + td {
+	background-color: #C6E2FF;
+}
+
+tr.k-grouping-row .k-group-cell {
+	background-color: #A4D1FF;
+}
+
+tr.k-grouping-row td, .k-group-footer td {
+	position: relative;
+	font-weight: bold;
+}
+
+/* END Grid */
+/* END Kendo */
+
+/* Open Order Status */
+
+tr.k-alt div.notready {
+	background-color: #E3E399;
+}
+
+tr div.notready {
+	background-color: #FFFF99;
+}
+
+tr.k-alt div.ready {
+	background-color: #77E377;
+}
+
+tr div.ready {
+	background-color: #99FF99;
+}
+
+tr.k-alt div.released {
+	background-color: #FFAA50;
+}
+
+tr div.released {
+	background-color: #FFCC60;
+}
+
+tr.k-alt div.bol {
+	background-color: #AAE3E3;
+}
+
+tr div.bol {
+	background-color: #CCFFFF;
+}
+
+tr.k-alt div.creditblock {
+	background-color: #DD8888;
+}
+
+tr div.creditblock {
+	background-color: #FFAAAA;
+}
+
+tr.k-alt div.deliveryblock {
+	background-color: #AAE3E3;
+}
+
+tr div.deliveryblock {
+	background-color: #CCFFFF;
+}
+
+/* END Open Order Status*/
+
+#vertical > .k-pane, #vertical > .k-splitbar {
+	width: 100% !important;
+}
+
+
+/* Use Light Icons */
+
+.k-grid-header .k-i-arrowhead-s, .k-grid-header .k-i-arrow-n, .k-grid-header .k-i-arrow-s {
+	background-image: url('/Content/kendo/Moonlight/sprite.png');
+}
+
+
+
+.rollingHeader {
+	/*background-image: url('/images/darkTheme/backgroundLeftContentHeader.png');*/
+	background-repeat: repeat-x; /*color: #FFFFFF;*/
+	padding: .4em .6em;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+#RollingContent .contentTitleSmall th {
+	background-image: url(/images/darkTheme/backgroundContentHeaderLarge.png) !important;
+	background-position: 0px 50%;
+	background-repeat: repeat-x;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+#RollingContent table {
+	border-spacing: 0;
+}
+#RollingContent th {
+	border-right: 1px solid #FFFFFF;
+}
+#RollingContent th:last-child {
+	border-right: 0px solid #FFFFFF;
+}
+.k-state-active, .k-state-active:hover {
+	border-color: #941800;
+}
+.k-content, .k-content:hover {
+	border-color: #E3E3E3;
+}
+#searchtabstrip .k-content {
+	margin: 0;
+	padding: 0;
+}
+#rightAJAXContent {
+	overflow: auto;
+}
+
+.qm-export-button {
+  background-color: #941800; 
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}

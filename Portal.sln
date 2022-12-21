@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JMC.Portal.Web.UI", "JMC.Portal.Web.UI\JMC.Portal.Web.UI.csproj", "{0E9E8A88-3CAC-42C4-B519-56CB2BCDD550}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JMC.Portal.Business", "JMC.Portal.Business\JMC.Portal.Business.csproj", "{7172C59A-E70B-4A06-A6F0-CA310A57404B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JMC.Portal.Common.MVC", "JMC.Portal.Common.MVC\JMC.Portal.Common.MVC.csproj", "{2404D9C8-09AC-4ED6-9D0E-9E7F0101F76C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JMC", "JMC\JMC.csproj", "{E701818F-37F5-4EA5-999B-EC2E8FDA472B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JMC.Data.Kendo", "JMC.Data.Kendo\JMC.Data.Kendo.csproj", "{723ED25A-D847-4FC6-807F-2013BD9E395A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JMC.SlitterOptimization.Business", "JMC.SlitterOptimization.Business\JMC.SlitterOptimization.Business.csproj", "{9196573E-82DC-4A47-AA3A-3F61DF4C24FE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E9E8A88-3CAC-42C4-B519-56CB2BCDD550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9E8A88-3CAC-42C4-B519-56CB2BCDD550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9E8A88-3CAC-42C4-B519-56CB2BCDD550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9E8A88-3CAC-42C4-B519-56CB2BCDD550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7172C59A-E70B-4A06-A6F0-CA310A57404B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7172C59A-E70B-4A06-A6F0-CA310A57404B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7172C59A-E70B-4A06-A6F0-CA310A57404B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7172C59A-E70B-4A06-A6F0-CA310A57404B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2404D9C8-09AC-4ED6-9D0E-9E7F0101F76C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2404D9C8-09AC-4ED6-9D0E-9E7F0101F76C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2404D9C8-09AC-4ED6-9D0E-9E7F0101F76C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2404D9C8-09AC-4ED6-9D0E-9E7F0101F76C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E701818F-37F5-4EA5-999B-EC2E8FDA472B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E701818F-37F5-4EA5-999B-EC2E8FDA472B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E701818F-37F5-4EA5-999B-EC2E8FDA472B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E701818F-37F5-4EA5-999B-EC2E8FDA472B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{723ED25A-D847-4FC6-807F-2013BD9E395A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{723ED25A-D847-4FC6-807F-2013BD9E395A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{723ED25A-D847-4FC6-807F-2013BD9E395A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{723ED25A-D847-4FC6-807F-2013BD9E395A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9196573E-82DC-4A47-AA3A-3F61DF4C24FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9196573E-82DC-4A47-AA3A-3F61DF4C24FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9196573E-82DC-4A47-AA3A-3F61DF4C24FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9196573E-82DC-4A47-AA3A-3F61DF4C24FE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7EFAF164-621C-41DE-B7DF-C5ECF40BA199}
+	EndGlobalSection
+EndGlobal
